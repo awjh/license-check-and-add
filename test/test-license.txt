@@ -1,0 +1,3 @@
+/*
+ * MY TEST LICENSE
+ */

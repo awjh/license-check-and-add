@@ -1,0 +1,37 @@
+{
+  "name": "license-check-and-add",
+  "version": "1.0.0",
+  "description": "A tool to enable the checking of license headers and inserting of them",
+  "main": "index.js",
+  "scripts": {
+    "test": "nyc --reporter=html mocha",
+    "posttest": "nyc check-coverage --lines 100 --branches 95.16 --statements 100 --functions 100"
+  },
+  "bin": {
+    "license-check-and-add": "bin/server.js"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "pkg-conf": "^1.1.2"
+  },
+  "devDependencies": {
+    "mocha": "^2.0.1",
+    "chai": "3.5.0",
+    "nyc": "11.3.0",
+    "sinon": "2.3.8"
+  },
+  "repository": {
+    "type": "git",
+    "url": "github.com/awjh/license-check-and-add"
+  },
+  "keywords": [
+    "license",
+    "check",
+    "license",
+    "header"
+  ],
+  "author": "awjh",
+  "license": "MIT"
+}
