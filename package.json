@@ -1,6 +1,6 @@
 {
   "name": "license-check-and-add",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A tool to enable the checking of license headers and inserting of them",
   "main": "index.js",
   "scripts": {
