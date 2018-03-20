@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "nyc --reporter=html mocha",
-    "posttest": "nyc check-coverage --lines 100 --branches 95.16 --statements 100 --functions 100"
+    "posttest": "nyc check-coverage --lines 100 --branches 97.87 --statements 100 --functions 100"
   },
   "bin": {
     "license-check-and-add": "bin/server.js"
