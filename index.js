@@ -133,7 +133,6 @@ module.exports.run = function (config) {
     }
     if(err.length > 0) {
       if(config.output) {
-        console.log('OUTPUT', err.join(eol));
         fs.writeFileSync(path.resolve(process.cwd(), config.output), err.join(eol));
       }
 
