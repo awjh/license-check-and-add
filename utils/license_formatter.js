@@ -30,14 +30,6 @@ class LicenseFormatter {
             return fs.readFileSync(format.file).toString();
         } 
 
-        if (format.hasOwnProperty('prepend')) {
-            license_text = format.prepend + eol + license_text;
-        }
-
-        if (format.hasOwnProperty('append')) {
-            license_text = license_text + eol + format.append;
-        }
-
         if (format.hasOwnProperty('eachLine')) {
             let license_lines = license_text.split(/\r\n|\n/);
             license_lines.forEach((line, index) => {
@@ -53,6 +45,14 @@ class LicenseFormatter {
             });
 
             license_text = license_lines.join(eol);
+        }
+
+	if (format.hasOwnProperty('prepend')) {
+            license_text = format.prepend + eol + license_text;
+        }
+
+        if (format.hasOwnProperty('append')) {
+            license_text = license_text + eol + format.append;
         }
 
         return license_text;
