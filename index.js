@@ -117,9 +117,15 @@ module.exports.run = function (config) {
     let license_text = fs.readFileSync(license).toString();
     for(let i = 0; i < files.length; i++) {
       let file = fs.readFileSync(files[i]).toString();
+      file = file.split(/\r?\n/).map((line) => {
+	return line.trim();
+      }).join('\n');
       let extension = path.extname(files[i]) ? path.extname(files[i]) : path.basename(files[i]);
       
       let formatted_text = LicenseFormatter.formatLicenseForFile(extension, license_text);
+      formatted_text = formatted_text.split(/\r?\n/).map((line) => {
+	return line.trim();
+      }).join('\n');
 
       if(file.substring(0, formatted_text.length) !== formatted_text) {
         if(insert_license) {
