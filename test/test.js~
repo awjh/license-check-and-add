@@ -123,8 +123,8 @@ describe('license-check-and-add', () => {
       }).to.throw('License Check failed. 1 file(s) did not have the license.');
     });
 
-    it('should only test against files in subdirectories that are in exact_paths when exact_paths_method not set to EXCLUDE', () => {
-      config.exact_paths = ['sub-directory/sub-file.js'];
+    it('should only test against directories that are in exact_paths when exact_paths_method not set to EXCLUDE', () => {
+      config.exact_paths = ['sub-directory/sub-.js'];
       config.exact_paths_method = 'INCLUDE';
 
       expect(() => {

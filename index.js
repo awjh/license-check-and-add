@@ -78,7 +78,14 @@ module.exports.run = function (config) {
               exact_paths.push(path.join(pth, item));
             });
             getFolderContent(pth);
-          }
+          } else {
+	    // WE NEED TO STILL GO THROUGH THE DIRECTORY IF WE ARE INCLUDING A FILE SOMEWHERE IN IT
+	    exact_paths.forEach((exact_path) => {
+	      if(exact_path.substring(0, pth.length) === pth) {
+		getFolderContent(pth);
+	      }
+	    });
+	  }
         } else if(fs.lstatSync(pth).isFile()) {
           let push = false;
           if(exclude_exact_paths && !exact_paths.includes(pth)) {
