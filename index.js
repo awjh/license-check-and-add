@@ -123,11 +123,11 @@ module.exports.run = function (config) {
       let extension = path.extname(files[i]) ? path.extname(files[i]) : path.basename(files[i]);
       
       let formatted_text = LicenseFormatter.formatLicenseForFile(extension, license_text);
-      formatted_text = formatted_text.split(/\r?\n/).map((line) => {
+      let formatted_text_trimmed  = formatted_text.split(/\r?\n/).map((line) => {
 	return line.trim();
       }).join('\n');
 
-      if(file_trimmed.substring(0, formatted_text.length) !== formatted_text) {
+      if(file_trimmed.substring(0, formatted_text_trimmed.length) !== formatted_text_trimmed) {
         if(insert_license) {
           let new_text = formatted_text + eol + file;
           fs.writeFileSync(files[i], new_text);
