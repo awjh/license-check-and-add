@@ -67,8 +67,11 @@ Can be set to INCLUDE or EXCLUDE. INCLUDE causes the checker to only check again
 ### file types
 List of file types to included or excluded from the search. Extensions require the preceding `.`.
 
-### insert_license
-True causes the checker to insert the license specified in the config into the top of any file it finds which does not contain it.
+### insert_license (optional - default false)
+True causes the checker to insert the license specified in the config into the top of any file it finds which does not contain it. You cannot insert and clear in a single run.
+
+### clear_license (optional - default false)
+True causes the checker to remove the license from files it finds containing it. You cannot insert and clear in a single run.
 
 ### output (optional)
 Path of file for where the list of files which do not contain the license should be output. The output will still be shown in the console.

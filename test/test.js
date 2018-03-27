@@ -37,6 +37,15 @@ describe('license-check-and-add', () => {
         }).to.throw('You must define a minimum config e.g. one containing base_directory and license');
     });
 
+    it('should throw error if insert and clear are both defined', () => {
+      config.insert_license = true;
+      config.clear_license = true;
+
+      expect(() => {
+        license.run(config);
+      }).to.throw('You cannot insert and clear at the same time');
+    });
+
     it('should throw error if folder not in config', () => {
         delete config.folder;
 
@@ -206,6 +215,29 @@ describe('license-check-and-add', () => {
       };
 
       expect(license.run(config)).to.deep.equal(true);
+    });
+
+    it('should remove the license when clear_license and file contains the license', () => {
+      config = {
+          "folder": __dirname,
+          "license": path.join(__dirname, 'test-license.txt'),
+          "default_format": { "prepend": "/*", "append": "*/" },
+          "exact_paths_method": "INCLUDE",
+          "exact_paths": [path.join(__dirname, 'has-license.js')],
+          "file_type_method": "EXCLUDE",
+          "file_types": [],
+          "clear_license": true
+      };
+
+      let writeFileSync = sinon.stub(fs, 'writeFileSync');
+
+      expect(license.run(config)).to.deep.equal(true);
+
+      var expected_text = '\nlet me_start_by_saying = "HELLO WORLD";';
+
+      expect(writeFileSync.calledWith(path.join(__dirname, 'has-license.js'), expected_text)).to.be.ok;
+
+      writeFileSync.restore();
     });
 
     it('should write to output when output supplied in config and a failure occurs', () => {

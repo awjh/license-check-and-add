@@ -16,6 +16,7 @@ module.exports.run = function (config) {
       exclude_file_type = config.file_type_method === 'EXCLUDE' ? true : false;
       file_types = typeof config.file_types !== 'undefined' ? config.file_types : [];
       insert_license = config.insert_license === true ? true : false;
+      clear_license = config.clear_license === true ? true : false;
   
   let default_ignore_extensions = [".png", ".svg", ".jpeg", ".jpg", ".gif", ".tif", ".ico", ".json"]
 
@@ -38,8 +39,16 @@ module.exports.run = function (config) {
     console.log('Running using include file type list');
   }
 
+  if(insert_license && clear_license) {
+    throw new Error('You cannot insert and clear at the same time')
+  }
+
   if(insert_license) {
     console.log('Automatically adding licenses');
+  }
+
+  if(clear_license) {
+    console.log('Automaticall removing licenses');
   }
 
   let files = [];
@@ -121,16 +130,19 @@ module.exports.run = function (config) {
 
   function giveFilesLicense() {
     let err = [];
+    let removed = 0;
     let license_text = fs.readFileSync(license).toString();
     for(let i = 0; i < files.length; i++) {
       let file = fs.readFileSync(files[i]).toString();
-      let file_trimmed = file.split(/\r?\n/).map((line) => {
+      let file_array = file.split(/\r?\n/);
+      let file_trimmed = file_array.map((line) => {
 	return line.trim();
       }).join('\n');
       let extension = path.extname(files[i]) ? path.extname(files[i]) : path.basename(files[i]);
       
       let formatted_text = LicenseFormatter.formatLicenseForFile(extension, license_text);
-      let formatted_text_trimmed  = formatted_text.split(/\r?\n/).map((line) => {
+      let formatted_text_array = formatted_text.split(/\r?\n/);
+      let formatted_text_trimmed  = formatted_text_array.map((line) => {
 	return line.trim();
       }).join('\n');
 
@@ -142,6 +154,10 @@ module.exports.run = function (config) {
           console.error('\x1b[31m\u2717\x1b[0m License not found in ', files[i]);
           err.push(files[i])
         }
+      } else if (clear_license) {
+        let new_text = file_array.slice(formatted_text_array.length).join(eol);
+        fs.writeFileSync(files[i], new_text);
+        removed++;
       }
     }
     if(err.length > 0) {
@@ -150,8 +166,10 @@ module.exports.run = function (config) {
       }
 
       throw new Error('License Check failed. '+err.length+' file(s) did not have the license.');
-    } else {
+    } else if (!clear_license) {
       console.log('\x1b[32m\u2714\x1b[0m All files have licenses.')
+    } else {
+      console.log('\x1b[32m\u2714\x1b[0m Removed license from '+removed+' file(s).')
     }
   }
 
