@@ -91,7 +91,7 @@ describe('license-check-and-add', () => {
 
         expect(() => {
           license.run(config);
-        }).to.throw('License Check failed. 3 file(s) did not have the license.');
+        }).to.throw('License Check failed. 4 file(s) did not have the license.');
     });
 
     it('should handle file_types not set in the config', () => {
@@ -99,13 +99,13 @@ describe('license-check-and-add', () => {
 
         expect(() => {
           license.run(config);
-        }).to.throw('License Check failed. 3 file(s) did not have the license.');
+        }).to.throw('License Check failed. 4 file(s) did not have the license.');
     });
 
     it('should error when files do not contain license', () => {
         expect(() => {
           license.run(config);
-        }).to.throw('License Check failed. 3 file(s) did not have the license.');
+        }).to.throw('License Check failed. 4 file(s) did not have the license.');
     })
 
     it('should ignore files and directories in exact_paths when exact_paths_method set to EXCLUDE', () => {
@@ -129,7 +129,7 @@ describe('license-check-and-add', () => {
 
       expect(() => {
         license.run(config);
-      }).to.throw('License Check failed. 1 file(s) did not have the license.');
+      }).to.throw('License Check failed. 2 file(s) did not have the license.');
     });
 
     it('should only test against files in subdirectories that are in exact_paths when exact_paths_method not set to EXCLUDE', () => {
@@ -139,6 +139,15 @@ describe('license-check-and-add', () => {
       expect(() => {
         license.run(config);
       }).to.throw('License Check failed. 1 file(s) did not have the license.');
+    })
+
+    it('should only test against files in subdirectories that are in exact_paths when exact_paths_method not set to EXCLUDE, handling multiple includes in one folder', () => {
+      config.exact_paths = ['sub-directory/sub-file.js', 'sub-directory/sub-file-2.js'];
+      config.exact_paths_method = 'INCLUDE';
+
+      expect(() => {
+        license.run(config);
+      }).to.throw('License Check failed. 2 file(s) did not have the license.');
     })
 
     it('should exclude files of types in file_types when file_type_method set to EXCLUDE', () => {
@@ -155,7 +164,7 @@ describe('license-check-and-add', () => {
 
       expect(() => {
         license.run(config);
-      }).to.throw('License Check failed. 2 file(s) did not have the license.');
+      }).to.throw('License Check failed. 3 file(s) did not have the license.');
     });
 
     it('should exclude files of types in file_types when file_type_method set to EXCLUDE when exact_paths_method is set to INCLUDE', () => {
@@ -174,7 +183,7 @@ describe('license-check-and-add', () => {
 
       expect(() => {
         license.run(config);
-      }).to.throw('License Check failed. 1 file(s) did not have the license.');
+      }).to.throw('License Check failed. 2 file(s) did not have the license.');
     });
 
     it('should include files of default type if exclude_defaults set to false', () => {
@@ -182,7 +191,7 @@ describe('license-check-and-add', () => {
 
       expect(() => {
         license.run(config);
-      }).to.throw('License Check failed. 4 file(s) did not have the license.');
+      }).to.throw('License Check failed. 5 file(s) did not have the license.');
     });
 
     it('should add the license to a file when insert_license is true', () => {
@@ -246,9 +255,9 @@ describe('license-check-and-add', () => {
 
       expect(() => {
         license.run(config);
-      }).to.throw('License Check failed. 3 file(s) did not have the license.');
+      }).to.throw('License Check failed. 4 file(s) did not have the license.');
 
-      let expected_files = [path.join(__dirname, 'test-directory-structure/.test-no-extension'), path.join(__dirname, 'test-directory-structure/file.js'), path.join(__dirname, 'test-directory-structure/sub-directory/sub-file.js')]
+      let expected_files = [path.join(__dirname, 'test-directory-structure/.test-no-extension'), path.join(__dirname, 'test-directory-structure/file.js'), path.join(__dirname, 'test-directory-structure/sub-directory/sub-file-2.js'), path.join(__dirname, 'test-directory-structure/sub-directory/sub-file.js')]
 
       expect(writeFileSync.calledWith(path.join(process.cwd(), 'output.txt'), expected_files.join(eol))).to.be.ok;
 

@@ -48,9 +48,10 @@ module.exports.run = function (config) {
   }
 
   if(clear_license) {
-    console.log('Automaticall removing licenses');
+    console.log('Automatically removing licenses');
   }
 
+  let checkedFolders = [];
   let files = [];
 
   if(typeof base_directory === 'undefined') {
@@ -74,6 +75,10 @@ module.exports.run = function (config) {
   LicenseFormatter = new LicenseFormatter(config.license_formats, config.default_format);
 
   function getFolderContent(folder) {
+      if (checkedFolders.includes(folder)) {
+	return;
+      }
+      checkedFolders.push(folder);
       fs.readdirSync(folder).forEach(item => {
         let pth = path.join(folder, item);
         if(fs.lstatSync(pth).isDirectory()) {
