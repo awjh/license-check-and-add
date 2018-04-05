@@ -33,7 +33,7 @@ You can then run the script from the terminal using:
 npm run licchkadd
 ```
 
-In the example config described the checks are running to test whether the license in header.txt is found within files only within the folder src and in the default formats specified e.g. a license in a JS file formatted:
+In the example config described the checks are running to test whether the license in header.txt is found at the top of files only within the folder src and in the default formats specified e.g. a license in a JS file formatted:
 ```
 /*
 LICENSE CONTENT
