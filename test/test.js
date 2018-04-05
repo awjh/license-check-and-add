@@ -226,6 +226,21 @@ describe('license-check-and-add', () => {
       expect(license.run(config)).to.deep.equal(true);
     });
 
+    it('should return true when the included file includes license not on the top line', () => {
+	config = {
+          "folder": __dirname,
+          "license": path.join(__dirname, 'test-license.txt'),
+          "default_format": { "prepend": "/*", "append": "*/" },
+          "exact_paths_method": "INCLUDE",
+          "exact_paths": [path.join(__dirname, 'has-license-but-not-at-top.js')],
+          "file_type_method": "EXCLUDE",
+          "file_types": [],
+          "insert_license": false
+      };
+
+      expect(license.run(config)).to.deep.equal(true);
+    });
+
     it('should remove the license when clear_license and file contains the license', () => {
       config = {
           "folder": __dirname,

@@ -151,7 +151,7 @@ module.exports.run = function (config) {
 	return line.trim();
       }).join('\n');
 
-      if(file_trimmed.substring(0, formatted_text_trimmed.length) !== formatted_text_trimmed) {
+      if(!file_trimmed.includes(formatted_text_trimmed)) {
         if(insert_license) {
           let new_text = formatted_text + eol + file;
           fs.writeFileSync(files[i], new_text);
