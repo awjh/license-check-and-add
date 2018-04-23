@@ -227,7 +227,7 @@ describe('license-check-and-add', () => {
     });
 
     it('should return true when the included file includes license not on the top line', () => {
-	config = {
+	    config = {
           "folder": __dirname,
           "license": path.join(__dirname, 'test-license.txt'),
           "default_format": { "prepend": "/*", "append": "*/" },
@@ -394,5 +394,10 @@ describe('license-check-and-add', () => {
       let lf = new LicenseFormatter({'weirdFile': {"eachLine": {"append": " EOL"}}}, {});
       expect(lf.formatLicenseForFile('.weirdFile', 'NORMAL LICENSE TEXT\nMULTILINE')).to.deep.equal(`NORMAL LICENSE TEXT EOL${eol}MULTILINE EOL`);
     })
+
+    it('should remove trailing whitespace from each line', () => {
+      let lf = new LicenseFormatter({}, {}, 'TRIM');
+      expect(lf.formatLicenseForFile('.sh', 'NORMAL LICENSE TEXT\nMULTILINE WITH WHITESPACE \nAT THE END OF A LINE')).to.deep.equal(`# NORMAL LICENSE TEXT${eol}# MULTILINE WITH WHITESPACE${eol}# AT THE END OF A LINE`);
+    });
   })
 });

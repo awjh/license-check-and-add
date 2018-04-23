@@ -72,7 +72,7 @@ module.exports.run = function (config) {
   });
 
   LicenseFormatter = require('./utils/license_formatter.js');
-  LicenseFormatter = new LicenseFormatter(config.license_formats, config.default_format);
+  LicenseFormatter = new LicenseFormatter(config.license_formats, config.default_format, config.trailing_whitespace);
 
   function getFolderContent(folder) {
       if (checkedFolders.includes(folder)) {

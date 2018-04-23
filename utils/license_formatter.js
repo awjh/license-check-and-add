@@ -2,7 +2,7 @@ const fs = require('fs');
 const eol = require('os').EOL;
 
 class LicenseFormatter {
-    constructor(config, default_format) {
+    constructor(config, default_format, trailing_whitespace) {
         var default_formats = require('../default_license_formats.json');
         if (config) {
             this.license_formats = Object.assign(seperateFormats(default_formats), seperateFormats(config));
@@ -15,6 +15,13 @@ class LicenseFormatter {
             console.warn(`No default format specified using ${JSON.stringify(this.default_format)} as backup`);
         } else {
             this.default_format = default_format;
+        }
+
+        if (trailing_whitespace === 'TRIM') {
+            this.trailing_whitespace = false;
+            console.warn('Removing trailing whitespace from each line')
+        } else {
+            this.trailing_whitespace = true;
         }
     }
 
@@ -41,13 +48,17 @@ class LicenseFormatter {
                     line = line + format.eachLine.append;
                 }
 
-                license_lines[index] = line;
+                if (this.trailing_whitespace) {
+                    license_lines[index] = line;
+                } else {
+                    license_lines[index] = line.trim();
+                }
             });
 
             license_text = license_lines.join(eol);
         }
 
-	if (format.hasOwnProperty('prepend')) {
+	    if (format.hasOwnProperty('prepend')) {
             license_text = format.prepend + eol + license_text;
         }
 

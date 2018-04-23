@@ -67,6 +67,9 @@ Can be set to INCLUDE or EXCLUDE. INCLUDE causes the checker to only check again
 ### file types
 List of file types to included or excluded from the search. Extensions require the preceding `.`.
 
+### trailing_whitespace (optional)
+Setting value to 'TRIM' results in whitespace at the end of each row of a license being removed. Any other value or not providing it will mean that each line remains untrimmed.
+
 ### insert_license (optional - default false)
 True causes the checker to insert the license specified in the config into the top of any file it finds which does not contain it. You cannot insert and clear in a single run.
 
