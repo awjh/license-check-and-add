@@ -41,7 +41,7 @@ class LicenseFormatter {
                     line = line + format.eachLine.append;
                 }
 
-                license_lines[index] = line;
+                license_lines[index] = line.trim();
             });
 
             license_text = license_lines.join(eol);
