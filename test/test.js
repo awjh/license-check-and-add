@@ -395,9 +395,36 @@ describe('license-check-and-add', () => {
       expect(lf.formatLicenseForFile('.weirdFile', 'NORMAL LICENSE TEXT\nMULTILINE')).to.deep.equal(`NORMAL LICENSE TEXT EOL${eol}MULTILINE EOL`);
     })
 
+    it('should leave trailing whitespace on each line', () => {
+      let user_formats = {
+        "js": {
+          "prepend": "/*",
+          "append": "*/",
+          "eachLine": {
+            "prepend": " * "
+          }
+        }
+      }
+
+      let lf = new LicenseFormatter(user_formats, {});
+
+      expect(lf.formatLicenseForFile('.js', 'NORMAL LICENSE TEXT\nMULTILINE WITH WHITESPACE     \nAT THE END OF A LINE\n\nAND A BLANK LINE JUST FOR FUN')).to.deep.equal(`/*${eol} * NORMAL LICENSE TEXT${eol} * MULTILINE WITH WHITESPACE     ${eol} * AT THE END OF A LINE${eol} * ${eol} * AND A BLANK LINE JUST FOR FUN${eol}*/`);
+    });
+
     it('should remove trailing whitespace from each line', () => {
-      let lf = new LicenseFormatter({}, {}, 'TRIM');
-      expect(lf.formatLicenseForFile('.sh', 'NORMAL LICENSE TEXT\nMULTILINE WITH WHITESPACE \nAT THE END OF A LINE')).to.deep.equal(`# NORMAL LICENSE TEXT${eol}# MULTILINE WITH WHITESPACE${eol}# AT THE END OF A LINE`);
+      let user_formats = {
+        "js": {
+          "prepend": "/*",
+          "append": "*/",
+          "eachLine": {
+            "prepend": " * "
+          }
+        }
+      }
+
+      let lf = new LicenseFormatter(user_formats, {}, 'TRIM');
+
+      expect(lf.formatLicenseForFile('.js', 'NORMAL LICENSE TEXT\nMULTILINE WITH WHITESPACE     \nAT THE END OF A LINE\n\nAND A BLANK LINE JUST FOR FUN')).to.deep.equal(`/*${eol} * NORMAL LICENSE TEXT${eol} * MULTILINE WITH WHITESPACE${eol} * AT THE END OF A LINE${eol} *${eol} * AND A BLANK LINE JUST FOR FUN${eol}*/`);
     });
   })
 });

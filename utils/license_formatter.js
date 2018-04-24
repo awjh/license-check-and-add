@@ -51,7 +51,7 @@ class LicenseFormatter {
                 if (this.trailing_whitespace) {
                     license_lines[index] = line;
                 } else {
-                    license_lines[index] = line.trim();
+                    license_lines[index] = line.replace(/\s+$/, '');
                 }
             });
 
