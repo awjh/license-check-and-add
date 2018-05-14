@@ -165,7 +165,7 @@ module.exports.run = function (config) {
         removed++;
       }
     }
-    if(err.length > 0) {
+    if(err.length > 0 && !clear_license) {
       if(config.output) {
         fs.writeFileSync(path.resolve(process.cwd(), config.output), err.join(eol));
       }

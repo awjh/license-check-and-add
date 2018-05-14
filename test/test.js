@@ -264,6 +264,21 @@ describe('license-check-and-add', () => {
       writeFileSync.restore();
     });
 
+    it('should not throw an error when clear_license and license not found', () => {
+      config = {
+        "folder": path.join(__dirname, 'test-directory-structure'),
+        "license": path.join(__dirname, 'test-license.txt'),
+        "default_format": { "prepend": "/*", "append": "*/" },
+        "exact_paths_method": "EXCLUDE",
+        "exact_paths": [],
+        "file_type_method": "EXCLUDE",
+        "file_types": [],
+        "clear_license": true
+      };
+
+      expect(license.run(config)).to.deep.equal(true);
+    });
+
     it('should write to output when output supplied in config and a failure occurs', () => {
       config.output = 'output.txt'
       let writeFileSync = sinon.stub(fs, 'writeFileSync');
