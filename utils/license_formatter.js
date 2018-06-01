@@ -17,12 +17,7 @@ class LicenseFormatter {
             this.default_format = default_format;
         }
 
-        if (trailing_whitespace === 'TRIM') {
-            this.trailing_whitespace = false;
-            console.warn('Removing trailing whitespace from each line')
-        } else {
-            this.trailing_whitespace = true;
-        }
+        this.trailing_whitespace = trailing_whitespace;
     }
 
     formatLicenseForFile(file_type, license_text) {

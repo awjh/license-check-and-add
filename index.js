@@ -17,6 +17,7 @@ module.exports.run = function (config) {
       file_types = typeof config.file_types !== 'undefined' ? config.file_types : [];
       insert_license = config.insert_license === true ? true : false;
       clear_license = config.clear_license === true ? true : false;
+      trailing_whitespace = config.trailing_whitespace !== 'TRIM' ? true : false;
   
   let default_ignore_extensions = [".png", ".svg", ".jpeg", ".jpg", ".gif", ".tif", ".ico", ".json"]
 
@@ -51,6 +52,18 @@ module.exports.run = function (config) {
     console.log('Automatically removing licenses');
   }
 
+  if(trailing_whitespace) {
+    console.log('Trailing whitespace will be ignored in checking')
+  } else {
+    console.log('Trailing whitespace will not be accepted in checking')
+  } 
+  
+  if (trailing_whitespace && insert_license) {
+    console.log('Trailing whitespace will be left in inserted licenses')
+  } else if (!trailing_whitespace && insert_license) {
+    console.log('Trailing whitespace will be removed from inserted licenses')
+  }
+
   let checkedFolders = [];
   let files = [];
 
@@ -72,7 +85,7 @@ module.exports.run = function (config) {
   });
 
   LicenseFormatter = require('./utils/license_formatter.js');
-  LicenseFormatter = new LicenseFormatter(config.license_formats, config.default_format, config.trailing_whitespace);
+  LicenseFormatter = new LicenseFormatter(config.license_formats, config.default_format, trailing_whitespace);
 
   function getFolderContent(folder) {
       if (checkedFolders.includes(folder)) {
@@ -141,17 +154,18 @@ module.exports.run = function (config) {
       let file = fs.readFileSync(files[i]).toString();
       let file_array = file.split(/\r?\n/);
       let file_trimmed = file_array.map((line) => {
-	return line.trim();
+	      if (trailing_whitespace) {
+          return line.replace(/\s+$/, '');
+        } else {
+          return line;
+        }
       }).join('\n');
       let extension = path.extname(files[i]) ? path.extname(files[i]) : path.basename(files[i]);
       
       let formatted_text = LicenseFormatter.formatLicenseForFile(extension, license_text);
       let formatted_text_array = formatted_text.split(/\r?\n/);
-      let formatted_text_trimmed  = formatted_text_array.map((line) => {
-	return line.trim();
-      }).join('\n');
 
-      if(!file_trimmed.includes(formatted_text_trimmed)) {
+      if(!file_trimmed.includes(formatted_text)) {
         if(insert_license) {
           let new_text = formatted_text + eol + file;
           fs.writeFileSync(files[i], new_text);

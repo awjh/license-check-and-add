@@ -21,7 +21,7 @@ describe('license-check-and-add', () => {
     beforeEach(() => {
       config = {
         "folder": path.join(__dirname, 'test-directory-structure'),
-        "license": path.join(__dirname, 'test-license.txt'),
+        "license": path.join(__dirname, 'licenses/test-license.txt'),
         "default_format": { "prepend": "/*", "append": "*/" },
         "exact_paths_method": "EXCLUDE",
         "exact_paths": [],
@@ -211,13 +211,68 @@ describe('license-check-and-add', () => {
         writeFileSync.restore();
     });
 
+    it('should add the license to a file and trim trailing whitespace when insert_license is true and trailing_whitespace set to trim', () => {
+      config.insert_license = true;
+      config.exact_paths = ['sub-directory/sub-file.js'];
+      config.exact_paths_method = 'INCLUDE';
+      config.license = path.join(__dirname, 'licenses/test-license-blank-lines.txt')
+      config.license_formats = {
+        "js": {
+          "prepend": "/*",
+          "append": "*/",
+          "eachLine": {
+            "prepend": " * "
+          }
+        }
+      }
+
+      let writeFileSync = sinon.stub(fs, 'writeFileSync');
+
+      expect(license.run(config)).to.deep.equal(true);
+
+      expect(writeFileSync.getCall(0).args[0]).to.deep.equal(path.join(__dirname, 'test-directory-structure/sub-directory/sub-file.js'));
+      let written_data = writeFileSync.getCall(0).args[1];
+      expect(written_data.split(eol)[2]).to.deep.equal(' * ');
+      expect(written_data.split(eol)[4]).to.deep.equal(' * ');
+
+      writeFileSync.restore();
+    });
+
+    it('should add the license to a file and trim trailing whitespace when insert_license is true and trailing_whitespace set to trim', () => {
+      config.insert_license = true;
+      config.exact_paths = ['sub-directory/sub-file.js'];
+      config.exact_paths_method = 'INCLUDE';
+      config.license = path.join(__dirname, 'licenses/test-license-blank-lines.txt')
+      config.license_formats = {
+        "js": {
+          "prepend": "/*",
+          "append": "*/",
+          "eachLine": {
+            "prepend": " * "
+          }
+        }
+      }
+      config.trailing_whitespace = 'TRIM';
+
+      let writeFileSync = sinon.stub(fs, 'writeFileSync');
+
+      expect(license.run(config)).to.deep.equal(true);
+
+      expect(writeFileSync.getCall(0).args[0]).to.deep.equal(path.join(__dirname, 'test-directory-structure/sub-directory/sub-file.js'));
+      let written_data = writeFileSync.getCall(0).args[1];
+      expect(written_data.split(eol)[2]).to.deep.equal(' *');
+      expect(written_data.split(eol)[4]).to.deep.equal(' *');
+
+      writeFileSync.restore();
+    });
+
     it('should return true when all files contain the license', () => {
       config = {
           "folder": __dirname,
-          "license": path.join(__dirname, 'test-license.txt'),
+          "license": path.join(__dirname, 'licenses/test-license.txt'),
           "default_format": { "prepend": "/*", "append": "*/" },
           "exact_paths_method": "INCLUDE",
-          "exact_paths": [path.join(__dirname, 'has-license.js')],
+          "exact_paths": [path.join(__dirname, 'have-licenses/has-license.js')],
           "file_type_method": "EXCLUDE",
           "file_types": [],
           "insert_license": false
@@ -229,10 +284,10 @@ describe('license-check-and-add', () => {
     it('should return true when the included file includes license not on the top line', () => {
 	    config = {
           "folder": __dirname,
-          "license": path.join(__dirname, 'test-license.txt'),
+          "license": path.join(__dirname, 'licenses/test-license.txt'),
           "default_format": { "prepend": "/*", "append": "*/" },
           "exact_paths_method": "INCLUDE",
-          "exact_paths": [path.join(__dirname, 'has-license-but-not-at-top.js')],
+          "exact_paths": [path.join(__dirname, 'have-licenses/has-license-but-not-at-top.js')],
           "file_type_method": "EXCLUDE",
           "file_types": [],
           "insert_license": false
@@ -241,13 +296,63 @@ describe('license-check-and-add', () => {
       expect(license.run(config)).to.deep.equal(true);
     });
 
+    it('should throw an error when the inserted license has incorrect whitespace at the start of line', () => {
+      config = {
+        "folder": __dirname,
+        "license": path.join(__dirname, 'licenses/test-license.txt'),
+        "default_format": { "prepend": "/*", "append": "*/" },
+        "exact_paths_method": "INCLUDE",
+        "exact_paths": [path.join(__dirname, 'have-licenses/has-license-incorrect-start-line.js')],
+        "file_type_method": "EXCLUDE",
+        "file_types": [],
+        "insert_license": false
+      };
+
+      expect(() => {
+        license.run(config);
+      }).to.throw('License Check failed. 1 file(s) did not have the license.');
+    })
+
+    it('should return true when license is in file and includes whitespace at end with trailing_whitespace unset', () => {
+      config = {
+        "folder": __dirname,
+        "license": path.join(__dirname, 'licenses/test-license.txt'),
+        "default_format": { "prepend": "/*", "append": "*/" },
+        "exact_paths_method": "INCLUDE",
+        "exact_paths": [path.join(__dirname, 'have-licenses/has-license-but-whitespace-at-end-of-line.js')],
+        "file_type_method": "EXCLUDE",
+        "file_types": [],
+        "insert_license": false
+      };
+
+      expect(license.run(config)).to.deep.equal(true);
+    })
+
+    it('should throw error when license is in file and includes whitespace at end with trailing_whitespace TRIM', () => {
+      config = {
+        "folder": __dirname,
+        "license": path.join(__dirname, 'licenses/test-license.txt'),
+        "default_format": { "prepend": "/*", "append": "*/" },
+        "exact_paths_method": "INCLUDE",
+        "exact_paths": [path.join(__dirname, 'have-licenses/has-license-but-whitespace-at-end-of-line.js')],
+        "file_type_method": "EXCLUDE",
+        "file_types": [],
+        "insert_license": false,
+        trailing_whitespace: 'TRIM'
+      };
+
+      expect(() => {
+        license.run(config);
+      }).to.throw('License Check failed. 1 file(s) did not have the license.');
+    })
+
     it('should remove the license when clear_license and file contains the license', () => {
       config = {
           "folder": __dirname,
-          "license": path.join(__dirname, 'test-license.txt'),
+          "license": path.join(__dirname, 'licenses/test-license.txt'),
           "default_format": { "prepend": "/*", "append": "*/" },
           "exact_paths_method": "INCLUDE",
-          "exact_paths": [path.join(__dirname, 'has-license.js')],
+          "exact_paths": [path.join(__dirname, 'have-licenses/has-license.js')],
           "file_type_method": "EXCLUDE",
           "file_types": [],
           "clear_license": true
@@ -259,7 +364,7 @@ describe('license-check-and-add', () => {
 
       var expected_text = '\nlet me_start_by_saying = "HELLO WORLD";';
 
-      expect(writeFileSync.calledWith(path.join(__dirname, 'has-license.js'), expected_text)).to.be.ok;
+      expect(writeFileSync.calledWith(path.join(__dirname, 'have-licenses/has-license.js'), expected_text)).to.be.ok;
 
       writeFileSync.restore();
     });
@@ -267,7 +372,7 @@ describe('license-check-and-add', () => {
     it('should not throw an error when clear_license and license not found', () => {
       config = {
         "folder": path.join(__dirname, 'test-directory-structure'),
-        "license": path.join(__dirname, 'test-license.txt'),
+        "license": path.join(__dirname, 'licenses/test-license.txt'),
         "default_format": { "prepend": "/*", "append": "*/" },
         "exact_paths_method": "EXCLUDE",
         "exact_paths": [],
@@ -292,8 +397,7 @@ describe('license-check-and-add', () => {
       expect(writeFileSync.calledWith(path.join(process.cwd(), 'output.txt'), expected_files.join(eol))).to.be.ok;
 
       writeFileSync.restore();
-  });
-
+    });
   });
 
   describe('LicenseFormatter', () => {
@@ -391,7 +495,7 @@ describe('license-check-and-add', () => {
     })
 
     it('should return license specified in file', () => {
-      let lf = new LicenseFormatter({}, { "file": path.join(__dirname, 'test-license-2.txt') });
+      let lf = new LicenseFormatter({}, { "file": path.join(__dirname, 'licenses/test-license-2.txt') });
       expect(lf.formatLicenseForFile('special', 'NORMAL LICENSE TEXT')).to.deep.equal(`MY SPECIAL TEST LICENSE\nWITH THIS LICENSE YOU CAN DO THE SPECIAL TEST\n`);
     })
 
@@ -421,7 +525,7 @@ describe('license-check-and-add', () => {
         }
       }
 
-      let lf = new LicenseFormatter(user_formats, {});
+      let lf = new LicenseFormatter(user_formats, {}, true);
 
       expect(lf.formatLicenseForFile('.js', 'NORMAL LICENSE TEXT\nMULTILINE WITH WHITESPACE     \nAT THE END OF A LINE\n\nAND A BLANK LINE JUST FOR FUN')).to.deep.equal(`/*${eol} * NORMAL LICENSE TEXT${eol} * MULTILINE WITH WHITESPACE     ${eol} * AT THE END OF A LINE${eol} * ${eol} * AND A BLANK LINE JUST FOR FUN${eol}*/`);
     });
@@ -437,7 +541,7 @@ describe('license-check-and-add', () => {
         }
       }
 
-      let lf = new LicenseFormatter(user_formats, {}, 'TRIM');
+      let lf = new LicenseFormatter(user_formats, {}, false);
 
       expect(lf.formatLicenseForFile('.js', 'NORMAL LICENSE TEXT\nMULTILINE WITH WHITESPACE     \nAT THE END OF A LINE\n\nAND A BLANK LINE JUST FOR FUN')).to.deep.equal(`/*${eol} * NORMAL LICENSE TEXT${eol} * MULTILINE WITH WHITESPACE${eol} * AT THE END OF A LINE${eol} *${eol} * AND A BLANK LINE JUST FOR FUN${eol}*/`);
     });
