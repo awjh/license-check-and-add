@@ -328,6 +328,21 @@ describe('license-check-and-add', () => {
       expect(license.run(config)).to.deep.equal(true);
     })
 
+    it('should return true when license contains whitespace at end but whitespace is not present in file with trailing_whitespace unset', () => {
+      config = {
+        "folder": __dirname,
+        "license": path.join(__dirname, 'licenses/test-license-whitespace-at-end.txt'),
+        "default_format": { "prepend": "/*", "append": "*/" },
+        "exact_paths_method": "INCLUDE",
+        "exact_paths": [path.join(__dirname, 'have-licenses/has-license.js')],
+        "file_type_method": "EXCLUDE",
+        "file_types": [],
+        "insert_license": false
+      };
+
+      expect(license.run(config)).to.deep.equal(true);
+    })
+
     it('should throw error when license is in file and includes whitespace at end with trailing_whitespace TRIM', () => {
       config = {
         "folder": __dirname,

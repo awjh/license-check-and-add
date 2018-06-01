@@ -164,8 +164,15 @@ module.exports.run = function (config) {
       
       let formatted_text = LicenseFormatter.formatLicenseForFile(extension, license_text);
       let formatted_text_array = formatted_text.split(/\r?\n/);
+      let formatted_text_trimmed = formatted_text_array.map((line) => {
+	      if (trailing_whitespace) {
+          return line.replace(/\s+$/, '');
+        } else {
+          return line;
+        }
+      }).join('\n');
 
-      if(!file_trimmed.includes(formatted_text)) {
+      if(!file_trimmed.includes(formatted_text_trimmed)) {
         if(insert_license) {
           let new_text = formatted_text + eol + file;
           fs.writeFileSync(files[i], new_text);
