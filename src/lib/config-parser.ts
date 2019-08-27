@@ -29,12 +29,13 @@ export interface IConfig {
     trailingWhitespace: TrailingWhitespaceMode;
 }
 
-const REQUIRED_FIELDS: string[] = ['ignore', 'licenses'];
+const REQUIRED_FIELDS: string[] = ['ignore', 'license'];
 
 export function configParser (filePath: string): IConfig {
+
     const fileConfig = fs.readJSONSync(filePath) as IInputConfig;
 
-    for (const REQUIRED_FIELD in REQUIRED_FIELDS) {
+    for (const REQUIRED_FIELD of REQUIRED_FIELDS) {
         if (!fileConfig.hasOwnProperty(REQUIRED_FIELD)) {
             throw new Error('Missing required field in config: ' + REQUIRED_FIELD);
         }

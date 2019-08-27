@@ -30,6 +30,30 @@
     "url": "https://github.com/awjh/license-check-and-add/issues"
   },
   "homepage": "https://github.com/awjh/license-check-and-add#readme",
+  "nyc": {
+    "require": [
+      "ts-node/register"
+    ],
+    "extension": [
+      ".ts"
+    ],
+    "exclude": [
+      "coverage/**",
+      "dist/**",
+      "**/*.spec.ts",
+      "test/**"
+    ],
+    "reporter": [
+      "text-summary",
+      "html"
+    ],
+    "all": true,
+    "check-coverage": true,
+    "statements": 100,
+    "branches": 100,
+    "functions": 100,
+    "lines": 100
+  },
   "dependencies": {
     "fs-extra": "^8.1.0",
     "gitignore-to-glob": "^0.3.0",
@@ -40,12 +64,14 @@
   "devDependencies": {
     "@types/fs-extra": "^8.0.0",
     "@types/mocha": "^5.2.7",
+    "@types/mockery": "^1.4.29",
     "@types/node": "^12.6.8",
     "@types/sinon": "^7.0.13",
     "@types/sinon-chai": "^3.2.2",
     "@types/yargs": "^13.0.0",
     "chai": "^4.2.0",
     "mocha": "^6.1.4",
+    "mockery": "^2.1.0",
     "nyc": "^14.1.1",
     "sinon": "^7.3.2",
     "sinon-chai": "^3.3.0",

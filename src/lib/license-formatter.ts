@@ -19,15 +19,15 @@ export interface IFormatCollection {
 
 export class LicenseFormatter {
 
-    private defaultFormat: ILicenseFormat; // the format used when not found in list of configured formats
-    private licenseFormats: IFormatCollection;
-    private stripTrailingWhitespace: boolean; // tslint:disable-line: max-line-length -> useful for a format where you have a license with blank lines and prepend with a ' * ' so makes blank lines use ' *' instead
+    public readonly defaultFormat: ILicenseFormat; // the format used when not found in list of configured formats
+    public readonly licenseFormats: IFormatCollection;
+    public readonly stripTrailingWhitespace: boolean; // tslint:disable-line: max-line-length -> useful for a format where you have a license with blank lines and prepend with a ' * ' so makes blank lines use ' *' instead
 
-    constructor (declaredFormats: IFormatCollection, defaultFormat: ILicenseFormat, trailingWhitespace: TrailingWhitespaceMode) {
-        this.licenseFormats = this.seperateFileTypesInFormat(DEFAULT_FORMATS);
+    constructor (defaultFormat: ILicenseFormat, trailingWhitespace: TrailingWhitespaceMode, declaredFormats?: IFormatCollection) {
+        this.licenseFormats = this.separateFileTypesInFormat(DEFAULT_FORMATS);
 
         if (declaredFormats) {
-            this.licenseFormats = Object.assign(this.licenseFormats, this.seperateFileTypesInFormat(declaredFormats));
+            this.licenseFormats = Object.assign(this.licenseFormats, this.separateFileTypesInFormat(declaredFormats));
         }
 
         this.defaultFormat = defaultFormat;
@@ -78,7 +78,7 @@ export class LicenseFormatter {
         return licenseText;
     }
 
-    private seperateFileTypesInFormat (formats: IFormatCollection): IFormatCollection {
+    private separateFileTypesInFormat (formats: IFormatCollection): IFormatCollection {
         const separated = {};
 
         Object.keys(formats).forEach((key) => {

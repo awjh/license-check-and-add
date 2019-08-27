@@ -23,7 +23,9 @@ export class LicenseManager {
         trailingWhitespace: TrailingWhitespaceMode, mode: ManagementMode, outputPath: string,
     ) {
         this.paths = paths;
-        this.licenseFormatter = new LicenseFormatter(declaredFormats, defaultFormat, trailingWhitespace);
+        this.licenseFormatter = declaredFormats ?
+            new LicenseFormatter(defaultFormat, trailingWhitespace, declaredFormats) :
+            new LicenseFormatter(defaultFormat, trailingWhitespace);
         this.licenseText = licenseText;
         this.mode = mode;
         this.outputPath = outputPath;

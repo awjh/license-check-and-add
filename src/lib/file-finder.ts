@@ -1,14 +1,14 @@
 import * as globby from 'globby';
 
-export function getPaths (ignore: string[], ignoreDefaults: boolean): string[] {
+export const DEFAULT_IGNORES = [
+    '**/node_modules', '**/dist',
+    '**/LICENSE*', '**/*.png', '**/*.jpg', '**/*.jpeg', '**/*.gif', '**/*.tif', '**/*.ico', '*.json',
+];
 
-    const defaultIgnores = [
-        '**/node_modules', '**/dist',
-        '**/LICENSE*', '**/*.png', '**/*.jpg', '**/*.jpeg', '**/*.gif', '**/*.tif', '**/*.ico', '*.json',
-    ];
+export function getPaths (ignore: string[], ignoreDefaultIgnores: boolean): string[] {
 
-    if (!ignoreDefaults) {
-        ignore = ignore.concat(defaultIgnores);
+    if (!ignoreDefaultIgnores) {
+        ignore = ignore.concat(DEFAULT_IGNORES);
     }
 
     const paths = globby.sync('**/*', {
