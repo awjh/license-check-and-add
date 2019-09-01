@@ -12,11 +12,11 @@ export enum ManagementMode {
 
 export class LicenseManager {
 
-    private paths: string[];
-    private licenseFormatter: LicenseFormatter;
-    private licenseText: string;
-    private mode: ManagementMode;
-    private outputPath: string;
+    public readonly paths: string[];
+    public readonly licenseFormatter: LicenseFormatter;
+    public readonly licenseText: string;
+    public readonly mode: ManagementMode;
+    public readonly outputPath: string;
 
     constructor (
         paths: string[], licenseText: string, declaredFormats: IFormatCollection, defaultFormat: ILicenseFormat,

@@ -48,9 +48,7 @@ export class LicenseFormatter {
         }
 
         if (format.hasOwnProperty('eachLine')) {
-            let licenseLines = licenseText.split(/\r\n|\n/);
-
-            licenseLines.forEach((line) => {
+            licenseText = licenseText.split(/\r\n|\n/).map((line) => {
                 if (format.eachLine.hasOwnProperty('prepend')) {
                     line = format.eachLine.prepend + line;
                 }
@@ -58,13 +56,13 @@ export class LicenseFormatter {
                 if (format.eachLine.hasOwnProperty('append')) {
                     line = line + format.eachLine.append;
                 }
-            });
 
-            if (this.stripTrailingWhitespace) {
-                licenseLines = licenseLines.map((line) => {
-                    return line.replace(/\s+$/, '');
-                });
-            }
+                if (this.stripTrailingWhitespace) {
+                    line = line.replace(/\s+$/, '');
+                }
+
+                return line;
+            }).join(EOL);
         }
 
         if (format.hasOwnProperty('prepend')) {
