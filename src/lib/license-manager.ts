@@ -33,8 +33,8 @@ export class LicenseManager {
 
     public manage () {
         const missingLicenses = [];
-        let insertedLicenses = 0;
-        let removedLicenses = 0;
+        const insertedLicenses = [];
+        const removedLicenses = [];
 
         this.paths.forEach((filePath) => {
             const fileContents = fs.readFileSync(filePath).toString();
@@ -46,30 +46,38 @@ export class LicenseManager {
             if (!fileContents.includes(formattedLicense)) {
                 if (this.mode === ManagementMode.INSERT) {
                     this.insertLicense(fileContents, formattedLicense, filePath);
-                    insertedLicenses++;
-                } else {
+                    insertedLicenses.push(filePath);
+                } else if (this.mode === ManagementMode.CHECK) {
                     console.error('\x1b[31m\u2717\x1b[0m License not found in', filePath);
                     missingLicenses.push(filePath);
                 }
             } else if (this.mode === ManagementMode.REMOVE) {
                 this.removeLicense(fileContents, formattedLicense, filePath);
-                removedLicenses++;
+                removedLicenses.push(filePath);
             }
         });
 
-        if (this.mode !== ManagementMode.REMOVE) {
-            if (this.mode === ManagementMode.INSERT) {
-                console.log(`\x1b[33m!\x1b[0m Inserted license into ${insertedLicenses} file(s)`);
-            } else if (this.mode === ManagementMode.CHECK && this.outputPath) {
-                fs.writeFileSync(this.outputPath, missingLicenses.join(EOL));
+        if (this.outputPath) {
+            switch (this.mode) {
+                case ManagementMode.INSERT: fs.writeFileSync(this.outputPath, insertedLicenses.join(EOL)); break;
+                case ManagementMode.CHECK: fs.writeFileSync(this.outputPath, missingLicenses.join(EOL)); break;
+                case ManagementMode.REMOVE: fs.writeFileSync(this.outputPath, removedLicenses.join(EOL)); break;
             }
+        }
 
-            if (missingLicenses.length > 0) {
-                throw new Error(`License Check failed. ${missingLicenses.length} file(s) did not have the license.`);
+        if (this.mode !== ManagementMode.REMOVE) {
+            /* istanbul ignore else  */
+            if (this.mode === ManagementMode.INSERT) {
+                console.log(`\x1b[33m!\x1b[0m Inserted license into ${insertedLicenses.length} file(s)`);
+            } else if (this.mode === ManagementMode.CHECK) {
+                if (missingLicenses.length > 0) {
+                    throw new Error(`License check failed. ${missingLicenses.length} file(s) did not have the license.`);
+                }
+
+                console.log('\x1b[32m\u2714\x1b[0m All files have licenses.');
             }
-            console.log('\x1b[32m\u2714\x1b[0m All files have licenses.');
         } else {
-            console.log(`\x1b[32m\u2714\x1b[0m Removed license from ${removedLicenses} file(s).`);
+            console.log(`\x1b[32m\u2714\x1b[0m Removed license from ${removedLicenses.length} file(s).`);
         }
     }
 
@@ -99,12 +107,12 @@ export class LicenseManager {
         fileLines.some((fileLine, idx) => {
             if (fileLine === licenseLines[0]) {
                 const match = fileLines.slice(idx + 1, idx + licenseLines.length).every((nextLine, subsetIdx) => {
-                    return nextLine === licenseLines[subsetIdx];
+                    return nextLine === licenseLines[subsetIdx + 1];
                 });
 
                 if (match) {
-                    const newLines = fileLines.splice(idx, formattedLicense.length);
-                    fs.writeFileSync(filePath, newLines.join(EOL));
+                    fileLines.splice(idx, licenseLines.length);
+                    fs.writeFileSync(filePath, fileLines.join(EOL));
 
                     return true; // break out assume one license per file
                 }
