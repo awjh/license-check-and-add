@@ -23,14 +23,14 @@ describe ('#FileFinder', () => {
 
     let getPaths;
 
-    before(() => {
+    before (() => {
         mockery.enable({
             warnOnReplace: false,
             warnOnUnregistered: false,
         });
     });
 
-    beforeEach(() => {
+    beforeEach (() => {
         sandbox = sinon.createSandbox();
 
         globbySyncStub = sandbox.stub().returns(mockValidPaths);
@@ -39,6 +39,15 @@ describe ('#FileFinder', () => {
 
         delete require.cache[require.resolve('./file-finder')];
         getPaths = require('./file-finder').getPaths;
+    });
+
+    afterEach(() => {
+        sandbox.restore();
+        mockery.deregisterAll();
+    });
+
+    after(() => {
+        mockery.disable();
     });
 
     it ('should return the list of files from globby filtered by ignore list passed', () => {

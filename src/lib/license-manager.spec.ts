@@ -45,14 +45,14 @@ describe ('LicenseManager', () => {
         },
     };
 
-    before(() => {
+    before (() => {
         mockery.enable({
             warnOnReplace: false,
             warnOnUnregistered: false,
         });
     });
 
-    beforeEach(() => {
+    beforeEach (() => {
         sandbox = sinon.createSandbox();
         mockLicenseFormatter = sinon.createStubInstance(LicenseFormatter);
         LicenseFormatterStub = sandbox.stub().returns(mockLicenseFormatter);
@@ -109,7 +109,7 @@ describe ('LicenseManager', () => {
 
         let lm: LicenseManager;
 
-        beforeEach(() => {
+        beforeEach (() => {
             mockLicenseFormatter.formatLicenseForFile.returns('some license');
             fsReadFileStub = sandbox.stub().onFirstCall().returns('file without license')
                 .onSecondCall().returns('some license\nin the file');
@@ -243,7 +243,7 @@ describe ('LicenseManager', () => {
 
         let lm: LicenseManager;
 
-        beforeEach(() => {
+        beforeEach (() => {
             mockLicenseFormatter.formatLicenseForFile.returns('some license');
             fsWriteFileStub = sandbox.stub();
 
@@ -278,7 +278,7 @@ describe ('LicenseManager', () => {
 
         let lm: LicenseManager;
 
-        beforeEach(() => {
+        beforeEach (() => {
             mockLicenseFormatter.formatLicenseForFile.returns('some license');
             fsWriteFileStub = sandbox.stub();
 

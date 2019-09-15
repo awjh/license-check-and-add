@@ -7,6 +7,7 @@ import { LicenseManager, ManagementMode } from '../lib/license-manager';
 
 export function addExports (exports, command: CommandModule) {
     for (const key in command) {
+        /* istanbul ignore else  */
         if (command.hasOwnProperty(key)) {
             exports[key] = command[key];
         }
@@ -19,7 +20,7 @@ export function manageLicense (args: Arguments, mode: ManagementMode) {
 
     const licenseManager = new LicenseManager(
         paths, config.license, config.licenseFormats, config.defaultFormat,
-        config.trailingWhitespace, ManagementMode.CHECK, config.output,
+        config.trailingWhitespace, mode, config.output,
     );
 
     licenseManager.manage();

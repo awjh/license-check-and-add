@@ -1,6 +1,7 @@
 import * as yargs from 'yargs';
 import packageJSON from '../package.json';
-import { Arguments } from './constants.js';
+
+/* istanbul ignore file */
 
 const version = 'v' + packageJSON.version;
 
@@ -20,6 +21,6 @@ try {
     console.log('Command succeeded');
     process.exit(0);
 } catch (err) {
-    console.log('Command failed');
+    console.error('Command failed');
     process.exit(1);
 }
