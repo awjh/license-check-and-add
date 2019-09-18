@@ -19,7 +19,7 @@ export function manageLicense (args: Arguments, mode: ManagementMode) {
 
     const licenseManager = new LicenseManager(
         paths, config.license, config.licenseFormats, config.defaultFormat,
-        config.trailingWhitespace, ManagementMode.CHECK, config.output,
+        config.trailingWhitespace, mode, config.output,
     );
 
     licenseManager.manage();

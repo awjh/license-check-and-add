@@ -14,7 +14,7 @@ chai.use(sinonChai);
 
 // tslint:disable: no-unused-expression
 
-describe ('LicenseManager', () => {
+describe ('#LicenseManager', () => {
 
     let sandbox: sinon.SinonSandbox;
 

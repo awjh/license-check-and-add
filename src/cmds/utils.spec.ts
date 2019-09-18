@@ -6,7 +6,7 @@ import sinonChai from 'sinon-chai';
 const expect = chai.expect;
 chai.use(sinonChai);
 
-describe ('CommandUtils', () => {
+describe ('#CommandUtils', () => {
     let sandbox: sinon.SinonSandbox;
 
     let getPathsStub: sinon.SinonStub;

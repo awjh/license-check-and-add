@@ -8,6 +8,8 @@
   "scripts": {
     "build": "tsc",
     "build:watch": "npm run build -- -w",
+    "preintegration": "npm run build",
+    "integration": "mocha -r ts-node/register 'test/*.spec.ts'",
     "lint": "tslint -c tslint.json 'src/**/*.ts'",
     "test": "npm run lint && npm run unit",
     "unit": "nyc mocha -r ts-node/register 'src/**/*.spec.ts'"

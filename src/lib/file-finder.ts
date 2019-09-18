@@ -2,7 +2,7 @@ import * as globby from 'globby';
 
 export const DEFAULT_IGNORES = [
     '**/node_modules', '**/dist',
-    '**/LICENSE*', '**/*.png', '**/*.jpg', '**/*.jpeg', '**/*.gif', '**/*.tif', '**/*.ico', '*.json',
+    '**/LICENSE*', '**/*.png', '**/*.jpg', '**/*.jpeg', '**/*.gif', '**/*.tif', '**/*.ico', '**/*.json', '**/*.zip', '**/*.tgz',
 ];
 
 export function getPaths (ignore: string[], ignoreDefaultIgnores: boolean): string[] {

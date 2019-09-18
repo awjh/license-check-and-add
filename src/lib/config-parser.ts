@@ -32,7 +32,6 @@ export interface IConfig {
 const REQUIRED_FIELDS: string[] = ['ignore', 'license'];
 
 export function configParser (filePath: string): IConfig {
-
     const fileConfig = fs.readJSONSync(filePath) as IInputConfig;
 
     for (const REQUIRED_FIELD of REQUIRED_FIELDS) {

@@ -9,7 +9,7 @@ import { addExports } from './utils';
 const expect = chai.expect;
 chai.use(sinonChai);
 
-describe('RemoveCommand', () => {
+describe ('#RemoveCommand', () => {
 
     let sandbox: sinon.SinonSandbox;
 
