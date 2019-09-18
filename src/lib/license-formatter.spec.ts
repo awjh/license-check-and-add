@@ -43,7 +43,7 @@ describe ('#LicenseFormatter', () => {
     let sandbox: sinon.SinonSandbox;
     let separateStub: sinon.SinonStub;
 
-    beforeEach(() => {
+    beforeEach (() => {
         sandbox = sinon.createSandbox();
     });
 
@@ -53,7 +53,7 @@ describe ('#LicenseFormatter', () => {
 
     describe ('constructor', () => {
 
-        beforeEach(() => {
+        beforeEach (() => {
             separateStub = sandbox.stub(LicenseFormatter.prototype as any, 'separateFileTypesInFormat').onFirstCall().returns(mockFormats);
         });
 
@@ -96,7 +96,7 @@ describe ('#LicenseFormatter', () => {
 
     describe ('formatLicenseForFile', () => {
 
-        beforeEach(() => {
+        beforeEach (() => {
             separateStub = sandbox.stub(LicenseFormatter.prototype as any, 'separateFileTypesInFormat').onFirstCall().returns(mockFormats);
         });
 

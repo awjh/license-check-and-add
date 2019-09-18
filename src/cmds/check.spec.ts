@@ -17,14 +17,14 @@ describe ('#CheckCommand', () => {
 
     let MockeryCheckCommand;
 
-    before(() => {
+    before (() => {
         mockery.enable({
             warnOnReplace: false,
             warnOnUnregistered: false,
         });
     });
 
-    beforeEach(() => {
+    beforeEach (() => {
         sandbox = sinon.createSandbox();
         manageLicenseStub = sandbox.stub();
 
@@ -32,6 +32,15 @@ describe ('#CheckCommand', () => {
 
         delete require.cache[require.resolve('./check.ts')];
         MockeryCheckCommand = require('./check.ts');
+    });
+
+    afterEach(() => {
+        sandbox.restore();
+        mockery.deregisterAll();
+    });
+
+    after(() => {
+        mockery.disable();
     });
 
     describe ('builder', () => {

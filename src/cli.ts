@@ -1,6 +1,7 @@
 import * as yargs from 'yargs';
 import packageJSON from '../package.json';
-import { Arguments } from './constants.js';
+
+/* istanbul ignore file */
 
 const version = 'v' + packageJSON.version;
 

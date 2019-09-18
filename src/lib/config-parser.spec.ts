@@ -20,14 +20,14 @@ describe ('#ConfigParser', () => {
 
     let configParser;
 
-    before(() => {
+    before (() => {
         mockery.enable({
             warnOnReplace: false,
             warnOnUnregistered: false,
         });
     });
 
-    beforeEach(() => {
+    beforeEach (() => {
         sandbox = sinon.createSandbox();
 
         mockConfig = {

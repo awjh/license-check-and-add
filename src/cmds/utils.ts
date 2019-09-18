@@ -7,6 +7,7 @@ import { LicenseManager, ManagementMode } from '../lib/license-manager';
 
 export function addExports (exports, command: CommandModule) {
     for (const key in command) {
+        /* istanbul ignore else  */
         if (command.hasOwnProperty(key)) {
             exports[key] = command[key];
         }
