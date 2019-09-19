@@ -31,7 +31,6 @@ describe ('#ConfigParser', () => {
         sandbox = sinon.createSandbox();
 
         mockConfig = {
-            ignore: ['**/*.js', '**/*.json'],
             license: 'LICENSE.txt',
         };
 
@@ -55,15 +54,6 @@ describe ('#ConfigParser', () => {
         mockery.disable();
     });
 
-    it ('should throw an error when missing ignore from input JSON', () => {
-        delete mockConfig.ignore;
-
-        expect(() => {
-            configParser('some/file/path');
-        }).to.throw('Missing required field in config: ignore');
-        expect(fsReadJSONStub).to.have.been.calledOnceWithExactly('some/file/path');
-    });
-
     it ('should throw an error when missing license from input JSON', () => {
         delete mockConfig.license;
 
@@ -73,7 +63,24 @@ describe ('#ConfigParser', () => {
         expect(fsReadJSONStub).to.have.been.calledOnceWithExactly('some/file/path');
     });
 
-    it ('should handle when the minimum required fields are passed and ignore is an array', () => {
+    it ('should handle when minimum required fields are passed', () => {
+        const config = configParser('some/file/path');
+
+        expect(config).deep.equal({
+            defaultFormat: DEFAULT_FORMAT,
+            ignore: [],
+            ignoreDefaultIgnores: false,
+            license: 'some license',
+            licenseFormats: {},
+            trailingWhitespace: TrailingWhitespaceMode.DEFAULT,
+        } as IConfig);
+        expect(fsReadJSONStub).to.have.been.calledOnceWithExactly('some/file/path');
+        expect(fsReadFileStub).to.have.been.calledOnceWithExactly(path.resolve(process.cwd(), 'LICENSE.txt'));
+    });
+
+    it ('should handle when ignore is an array', () => {
+        mockConfig.ignore = ['**/*.js', '**/*.html'];
+
         const config = configParser('some/file/path');
 
         expect(config).deep.equal({
@@ -88,7 +95,7 @@ describe ('#ConfigParser', () => {
         expect(fsReadFileStub).to.have.been.calledOnceWithExactly(path.resolve(process.cwd(), 'LICENSE.txt'));
     });
 
-    it ('should handle when the minimum required fields are passed and ignore is a file', () => {
+    it ('should handle when ignore is a file', () => {
         mockConfig.ignore = 'some/ignore/file';
 
         const config = configParser('some/file/path');
@@ -117,7 +124,7 @@ describe ('#ConfigParser', () => {
 
         expect(config).deep.equal({
             defaultFormat: mockConfig.defaultFormat,
-            ignore: mockConfig.ignore,
+            ignore: [],
             ignoreDefaultIgnores: false,
             license: 'some license',
             licenseFormats: {},
@@ -134,7 +141,7 @@ describe ('#ConfigParser', () => {
 
         expect(config).deep.equal({
             defaultFormat: DEFAULT_FORMAT,
-            ignore: mockConfig.ignore,
+            ignore: [],
             ignoreDefaultIgnores: false,
             license: 'some license',
             licenseFormats: {},
@@ -151,7 +158,7 @@ describe ('#ConfigParser', () => {
 
         expect(config).deep.equal({
             defaultFormat: DEFAULT_FORMAT,
-            ignore: mockConfig.ignore,
+            ignore: [],
             ignoreDefaultIgnores: false,
             license: 'some license',
             licenseFormats: {},
@@ -168,7 +175,7 @@ describe ('#ConfigParser', () => {
 
         expect(config).deep.equal({
             defaultFormat: DEFAULT_FORMAT,
-            ignore: mockConfig.ignore,
+            ignore: [],
             ignoreDefaultIgnores: false,
             license: 'some license',
             licenseFormats: {},

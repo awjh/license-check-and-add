@@ -2,7 +2,7 @@ import * as fs from 'fs-extra';
 import gitignoreToGlob from 'gitignore-to-glob';
 import * as path from 'path';
 import { DEFAULT_FORMAT } from '../constants';
-import { IFormatCollection } from './license-formatter';
+import { IFormatCollection, ILicenseFormat } from './license-formatter';
 
 export enum TrailingWhitespaceMode {
     DEFAULT = 0,
@@ -10,13 +10,13 @@ export enum TrailingWhitespaceMode {
 }
 
 export interface IInputConfig {
-    defaultFormat?: object;
+    defaultFormat?: ILicenseFormat;
     ignoreDefaultIgnores?: boolean;
-    ignore: string | string[];
+    ignore?: string | string[];
     license: string;
     licenseFormats?: IFormatCollection;
     output?: string; // could make it a command line option e.g. -o formats it nicely and then they can pipe it out to whatever
-    trailingWhitespace?: string;
+    trailingWhitespace?: 'DEFAULT' | 'TRIM';
 }
 
 export interface IConfig {
@@ -29,7 +29,7 @@ export interface IConfig {
     trailingWhitespace: TrailingWhitespaceMode;
 }
 
-const REQUIRED_FIELDS: string[] = ['ignore', 'license'];
+const REQUIRED_FIELDS: string[] = ['license'];
 
 export function configParser (filePath: string): IConfig {
     const fileConfig = fs.readJSONSync(filePath) as IInputConfig;
@@ -49,7 +49,10 @@ export function configParser (filePath: string): IConfig {
         trailingWhitespace: TrailingWhitespaceMode.DEFAULT,
     };
 
-    if (!Array.isArray(fileConfig.ignore)) {
+    if (!fileConfig.ignore) {
+        console.debug('No ignore specified. Using');
+        config.ignore = [];
+    } else if (!Array.isArray(fileConfig.ignore)) {
         console.debug('Using ignore file');
         config.ignore = gitignoreToGlob(path.resolve(process.cwd(), fileConfig.ignore as string));
     } else {
