@@ -26,10 +26,11 @@ describe ('#Scenario', () => {
     });
 
     describe ('Check licenses', () => {
+        console.log(`node ${bin} check -f ${config}`);
         it ('should check licenses', () => {
             expect(() => {
                 childProcess.execSync(`node ${bin} check -f ${config}`);
-            }).to.throw(/3 file\(s\) did not have the license/);
+            }).to.throw(/4 file\(s\) did not have the license/);
         });
     });
 
@@ -41,19 +42,19 @@ describe ('#Scenario', () => {
 
             // tslint:disable-next-line: no-unused-expression
             expect(directoriesMatch(tmp, goalFilesDir)).to.be.true;
-            expect(stdout).to.match(/Inserted license into 3 file\(s\)/);
+            expect(stdout).to.match(/Inserted license into 4 file\(s\)/);
         });
     });
 
     describe ('Remove licenses', () => {
-        it ('should insert the license into those without', () => {
+        it ('should remove the license from those with', () => {
             const goalFilesDir = path.resolve(__dirname, 'goal-files/remove');
 
             const stdout = childProcess.execSync(`node ${bin} remove -f ${config}`).toString();
 
             // tslint:disable-next-line: no-unused-expression
             expect(directoriesMatch(tmp, goalFilesDir)).to.be.true;
-            expect(stdout).to.match(/Removed license from 4 file\(s\)/);
+            expect(stdout).to.match(/Removed license from 5 file\(s\)/);
         });
     });
 });

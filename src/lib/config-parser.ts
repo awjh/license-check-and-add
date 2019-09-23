@@ -1,5 +1,4 @@
 import * as fs from 'fs-extra';
-import gitignoreToGlob from 'gitignore-to-glob';
 import * as path from 'path';
 import { DEFAULT_FORMAT } from '../constants';
 import { IFormatCollection, ILicenseFormat } from './license-formatter';
@@ -22,7 +21,7 @@ export interface IInputConfig {
 export interface IConfig {
     defaultFormat: object;
     ignoreDefaultIgnores: boolean;
-    ignore: string[];
+    ignore: string | string[];
     license: string;
     licenseFormats: IFormatCollection;
     output?: string;
@@ -50,17 +49,14 @@ export function configParser (filePath: string): IConfig {
     };
 
     if (!fileConfig.ignore) {
-        console.debug('No ignore specified. Using');
+        console.debug('No ignore specified. Using []');
         config.ignore = [];
-    } else if (!Array.isArray(fileConfig.ignore)) {
-        console.debug('Using ignore file');
-        config.ignore = gitignoreToGlob(path.resolve(process.cwd(), fileConfig.ignore as string));
     } else {
-        config.ignore = fileConfig.ignore as string[];
+        config.ignore = fileConfig.ignore;
     }
 
     if (!fileConfig.defaultFormat) {
-        console.warn(`No default format specified using ${JSON.stringify(DEFAULT_FORMAT)} as backup`);
+        console.warn(`No default format specified. Using ${JSON.stringify(DEFAULT_FORMAT)} as backup`);
     }
 
     if (fileConfig.trailingWhitespace && fileConfig.trailingWhitespace.toUpperCase() === 'TRIM') {

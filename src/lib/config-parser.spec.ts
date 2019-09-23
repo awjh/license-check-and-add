@@ -135,7 +135,7 @@ describe ('#ConfigParser', () => {
     });
 
     it ('should handle when trailing whitespace set but not to trim', () => {
-        mockConfig.trailingWhitespace = 'NOT trim';
+        (mockConfig as any).trailingWhitespace = 'NOT trim';
 
         const config = configParser('some/file/path');
 
@@ -152,7 +152,7 @@ describe ('#ConfigParser', () => {
     });
 
     it ('should handle when trailing whitespace set to trim', () => {
-        mockConfig.trailingWhitespace = 'trIm';
+        (mockConfig as any).trailingWhitespace = 'trIm';
 
         const config = configParser('some/file/path');
 
