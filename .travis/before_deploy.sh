@@ -1,11 +1,13 @@
 #!/bin/bash
 
+set -e
+
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 ME=`basename "$0"`
 
 cd $DIR
 
-git remote add repo https://${GH_TOKEN}@github.com/awjh/node-red-contrib-alexa-endpoint
+git remote add repo https://${GH_TOKEN}@github.com/awjh/license-check-and-add
 git fetch repo
 
 git checkout master
