@@ -1,6 +1,8 @@
 language: node_js
 node_js:
 - stable
+before_deploy:
+- "./.travis/before_deploy.sh"
 deploy:
   provider: npm
   email: andrewhurt@btinternet.com
@@ -9,3 +11,5 @@ deploy:
   on:
     tags: true
     repo: awjh/license-check-and-add
+after_deploy:
+- "./.travis/after_deploy.sh"
