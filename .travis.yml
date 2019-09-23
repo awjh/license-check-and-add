@@ -1,3 +1,11 @@
 language: node_js
 node_js:
 - stable
+deploy:
+  provider: npm
+  email: andrewhurt@btinternet.com
+  api_key:
+    secure: uBqnDhoSV/Q9j3hDAM702gU6O8LnM4bBgd9tZQbBJV6kIW+lhyNRZMzWkmsmubskf25PjVbMUIDPgwbhuXgLBd79MWuQNJ3PJyvUmK+OZqdYBS2huQmcGUfYw119O9Acah3DxnbBWW6CX0EDDQvgtvS9KV0rCiyZ+82QIfm1BdKwUcARk7+lM7q7lQEh9Jyr5leTzROTEhxxdoJHF6sUfDuAIt3VEIDeTeEfL826FGJc0QyN3XYTwNRbsdf2I4Q0hiqL0UqS78jgLI1Hm14qlm78GacEwc/9fg9CPXr93HvWcF82PStqH1HPHed22sd0RE6EyS/eVuQ7Znz2jkUIFIEKvZoE4fObUG3HJ0Yk2cDarmSIEspyqZgQJzFo3an30Fg3Ymku0bSfQMeX1Gt2IeCQ4B5L2lG+3lnlfEnRYel8zi5w2WN1ork7alz/AOf099X0HJh03m+IUsDoQttNX0TfFVPNlOU/RPsJAgxo2HgPnEyhgZMPKewjjUe9+nlehfFcdfJ6GdHk0jRG+f3HDLZQG88n26zWceqxSTwGD5hyzibBGHgb3GeGn0FlHgbZSGDfqt9XHqWcMET/CvOTHHHxD8bz3enxVnWIr2OxFRnfKXwBwG8dBBph29f5JTY9pytHNUYxQT0QJQ/BBxEkQHnaqRR69CPEvOmNS96Avhs=
+  on:
+    tags: true
+    repo: awjh/license-check-and-add
