@@ -14,7 +14,6 @@ describe ('#ConfigParser', () => {
     let sandbox: sinon.SinonSandbox;
     let fsReadJSONStub: sinon.SinonStub;
     let fsReadFileStub: sinon.SinonStub;
-    let gitignoreToGlobStub: sinon.SinonStub;
 
     let mockConfig: IInputConfig;
 
@@ -36,10 +35,8 @@ describe ('#ConfigParser', () => {
 
         fsReadJSONStub = sandbox.stub().returns(mockConfig);
         fsReadFileStub = sandbox.stub().returns('some license');
-        gitignoreToGlobStub = sandbox.stub().returns(['some', 'glob', 'stuff']);
 
         mockery.registerMock('fs-extra', { readJSONSync: fsReadJSONStub, readFileSync: fsReadFileStub });
-        mockery.registerMock('gitignore-to-glob', gitignoreToGlobStub);
 
         delete require.cache[require.resolve('./config-parser')];
         configParser = require('./config-parser').configParser;
@@ -102,7 +99,7 @@ describe ('#ConfigParser', () => {
 
         expect(config).deep.equal({
             defaultFormat: DEFAULT_FORMAT,
-            ignore: ['some', 'glob', 'stuff'],
+            ignore: 'some/ignore/file',
             ignoreDefaultIgnores: false,
             license: 'some license',
             licenseFormats: {},
@@ -111,7 +108,6 @@ describe ('#ConfigParser', () => {
 
         expect(fsReadJSONStub).to.have.been.calledOnceWithExactly('some/file/path');
         expect(fsReadFileStub).to.have.been.calledOnceWithExactly(path.resolve(process.cwd(), 'LICENSE.txt'));
-        expect(gitignoreToGlobStub).to.have.been.calledOnceWithExactly(path.resolve(process.cwd(), 'some/ignore/file'));
     });
 
     it ('should use specified default format', () => {
