@@ -33,7 +33,7 @@ and files with the extensations:
 You can turn off this default ignoring in the config file.
 
 ## Configuring
-Configuration is expected in a JSON format. You can find a schema [here](https://github.com/awjh/license-check-and-add/blob/master/config-schema.json). An example schema can be found in our [unit tests](https://github.com/awjh/license-check-and-add/blob/master/test/license-check-and-add-config.json)
+Configuration is expected in a JSON format. You can find a schema [here](https://github.com/awjh/license-check-and-add/blob/master/config-schema.json). An example config can be found in our [tests](https://github.com/awjh/license-check-and-add/blob/master/test/license-check-and-add-config.json)
 
 ### Required fields
 
