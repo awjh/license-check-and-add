@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import * as yargs from 'yargs';
 import packageJSON from '../package.json';
 
