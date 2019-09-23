@@ -1,37 +1,84 @@
 {
   "name": "license-check-and-add",
-  "version": "2.3.6",
-  "description": "A tool to enable the checking of license headers and inserting of them",
-  "main": "index.js",
-  "scripts": {
-    "test": "nyc --reporter=html mocha",
-    "posttest": "nyc check-coverage --lines 100 --branches 97.87 --statements 100 --functions 100"
-  },
+  "version": "3.0.0",
+  "description": "A tool to enable the checking, inserting and removal of licenses",
   "bin": {
-    "license-check-and-add": "bin/server.js"
+    "license-check-and-add": "dist/src/cli.js"
   },
-  "directories": {
-    "test": "test"
-  },
-  "dependencies": {
-    "pkg-conf": "^1.1.2"
-  },
-  "devDependencies": {
-    "mocha": "^2.0.1",
-    "chai": "3.5.0",
-    "nyc": "11.3.0",
-    "sinon": "2.3.8"
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "npm run build -- -w",
+    "preintegration": "npm run build",
+    "integration": "mocha -r ts-node/register 'test/*.spec.ts'",
+    "lint": "tslint -c tslint.json 'src/**/*.ts'",
+    "test": "npm run lint && npm run unit && npm run integration",
+    "unit": "nyc mocha -r ts-node/register 'src/**/*.spec.ts'"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/awjh/license-check-and-add.git"
+    "url": "git+https://github.com/awjh/license-check-and-add.git"
   },
   "keywords": [
     "license",
     "check",
-    "license",
-    "header"
+    "header",
+    "add",
+    "insert",
+    "remove"
   ],
   "author": "awjh",
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/awjh/license-check-and-add/issues"
+  },
+  "homepage": "https://github.com/awjh/license-check-and-add#readme",
+  "nyc": {
+    "require": [
+      "ts-node/register"
+    ],
+    "extension": [
+      ".ts"
+    ],
+    "exclude": [
+      "coverage/**",
+      "dist/**",
+      "**/*.spec.ts",
+      "test/**"
+    ],
+    "reporter": [
+      "text-summary",
+      "html"
+    ],
+    "all": true,
+    "check-coverage": true,
+    "statements": 100,
+    "branches": 100,
+    "functions": 100,
+    "lines": 100
+  },
+  "dependencies": {
+    "fs-extra": "^8.1.0",
+    "gitignore-to-glob": "^0.3.0",
+    "globby": "^10.0.1",
+    "ignore": "^5.1.2",
+    "yargs": "^13.3.0"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^8.0.0",
+    "@types/mocha": "^5.2.7",
+    "@types/mockery": "^1.4.29",
+    "@types/node": "^12.6.8",
+    "@types/sinon": "^7.0.13",
+    "@types/sinon-chai": "^3.2.2",
+    "@types/yargs": "^13.0.0",
+    "chai": "^4.2.0",
+    "mocha": "^6.1.4",
+    "mockery": "^2.1.0",
+    "nyc": "^14.1.1",
+    "sinon": "^7.3.2",
+    "sinon-chai": "^3.3.0",
+    "ts-node": "^8.3.0",
+    "tslint": "^5.18.0",
+    "typescript": "^3.5.3"
+  }
 }

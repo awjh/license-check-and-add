@@ -1,0 +1,23 @@
+{
+    "defaultSeverity": "error",
+    "extends": [
+        "tslint:recommended"
+    ],
+    "jsRules": {},
+    "rules": {
+        "indent": [true, "spaces", 4],
+        "quotemark": [true, "single"],
+        "semicolon": [true, "always"],
+        "no-console": false,
+        "curly": true,
+        "triple-equals": true,
+        "max-line-length": [true, 140],
+        "no-string-throw": true,
+        "no-var-keyword": true,
+        "no-trailing-whitespace": true,
+        "object-literal-key-quotes": [true, "as-needed"],
+        "space-before-function-paren": [true, "always"],
+        "variable-name": false
+    },
+    "rulesDirectory": []
+}

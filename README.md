@@ -1,119 +1,92 @@
-# license-check-and-add
+# License check and add
 
-> license-check-and-add is an npm plugin that checks whether a specified piece of text is present in files and if asked to do so inserts it.
+license-check-and-add is an npm module to check whether a specified piece of text is present in specific formats for a set of files. It also can insert the formatted text into files that do not contain it or remove it from those that do.
 
 ## Install
-```
-npm install license-check-and-add
+``` bash
+npm install -D license-check-and-add
 ```
 
 ## Usage
-
-### Running from npm
-Add to your package.json a script for calling license-check-and-add and also the config:
+license-check-and-add is run using the following command either in your terminal if installed globally or as an npm script if installed locally to a module.
 
 ```
-"scripts": {
-    "licchkadd": "license-check-and-add"
-},
-"license-check-and-add-config": {
-    "folder": ".",
-    "license": "header.txt",
-    "exact_paths_method": "INCLUDE",
-    "exact_paths": ["src"],
-    "file_type_method": "EXCLUDE",
-    "file_types": [".html", ".txt", ".json"],
-    "insert_license": false
-}
+license-check-and-add [check|add|remove] -f [path/to/config.json]
 ```
 
-You can then run the script from the terminal using:
+The tool will check against files in the directory and its sub-directories unless they are specifically ignored. By default the command will ignore the following directories:
 
-```
-npm run licchkadd
-```
+- node_modules
+- dist
 
-In the example config described the checks are running to test whether the license in header.txt is found within files only within the folder src and in the default formats specified e.g. a license in a JS file formatted:
-```
-/*
-LICENSE CONTENT
-*/
-```
-and a license in an SH file formatted:
-```
-# LICENSE CONTENT
-```
-It is explicitly not checking against files that have the extension .html, .txt and .css. It is not automatically adding the license to those files it finds which do not contain it. It is using the default values for for the format 
+and files with the extensations:
+- png
+- jpg
+- jpeg
+- gif
+- tif
+- ico
+- json
+- zip
+- tgz
+
+You can turn off this default ignoring in the config file.
 
 ## Configuring
+Configuration is expected in a JSON format. You can find a schema [here](https://github.com/awjh/license-check-and-add/blob/master/config-schema.json). An example schema can be found in our [unit tests](https://github.com/awjh/license-check-and-add/blob/master/test/license-check-and-add-config.json)
 
-These are the options available for configuring license-check-and-add:
+### Required fields
 
-### folder
-The folder you wish to run the tests against. Can specify an absolute or relative path. Using `.` will run against the directory the process is run from.
+#### license
+The path to the file containing the unformatted license text to check/add/remove. You can specify and absolute or relative path. Relative paths will be taken relative to the location where the command is run rather than the config file.
 
-### license
-The file containing the license text you wish to text against. Can specify an absolute or relative path. Using just a name (e.g. header.txt) will run against a file of that name in the directory the process is run from.
+### Optional fields
 
-### exact_paths_method
-Can be set to INCLUDE or EXCLUDE. INCLUDE only runs against files whose names are specified in the `exact_paths` config element. EXCLUDE will run against all files in the `folder` configured and not against those specified in the `exact_paths` config element.
+#### ignoreDefaultIgnores
+Boolean value to specify whether or not to use the default ignores specified above. Setting to `true` will mean that those are NOT used.
 
-### exact_paths
-The paths of files/folders are explicitly included or excluded. Can store either a folder name or file name. Paths can be absolute or relative but you cannot include a path that is not located with the folder or its subfolders specified in the `folder` config element (e.g. checking against current folder . and reference a path for include of ../include_me.txt).
+#### ignore
+Either the path to an ignore style file (e.g. gitignore) or an array of globby strings specifying which files to ignore (e.g. ["**/*.txt"]). This list will be used in combination with the default ignore list unless you specify not to use that list.
 
-### file_type_method
-Can be set to INCLUDE or EXCLUDE. INCLUDE causes the checker to only check against files that have the an extension listed in the `file_types` config element. EXCLUDE causes it to run against all file types but ignore those listed in the `file_types` config element. 
+#### licenseFormats
+Describes how the license should be formatted for different file types. A [format object](#format-object) should be used for each entry. You can share a format object for multiple file types by separating the file with a "|". Entries in this field will overright the [default formats](#default-format). Example:
 
-### file types
-List of file types to included or excluded from the search. Extensions require the preceding `.`.
-
-### trailing_whitespace (optional)
-Setting value to 'TRIM' results in whitespace at the end of each row of a license being removed. Any other value or not providing it will mean that each line remains untrimmed.
-
-### insert_license (optional - default false)
-True causes the checker to insert the license specified in the config into the top of any file it finds which does not contain it. You cannot insert and clear in a single run.
-
-### clear_license (optional - default false)
-True causes the checker to remove the license from files it finds containing it. You cannot insert and clear in a single run.
-
-### output (optional)
-Path of file for where the list of files which do not contain the license should be output. The output will still be shown in the console.
-
-### exclude_defaults (optional)
-True causes the following list of file types to be ignored whether they are in the list of files to be scanned or not. This current list is `.png, .svg, .jpeg, .jpg, .gif, .tif, .ico, .json`. If you do not provide a value this defaults to true.
-
-### default_format (optional)
-The format the license should take if a file type is iterated over by the checker that does not appear in the default_license_formats.json file. If this value is not passed then the license is automatically prepended with /* and appended with */. Made up of a single format object. Example
-```
-{
-    "prepend": "####",
-    "append": "####"
-}
-```
-
-### license_formats (optional)
-How the license should be formatted for different file types. Should use a format object for each entry. You can share a format object for different file types by seperating the file types with a pipe. Entries in this field will overwrite values in the default_license_formats.json. Example:
-```
+``` json
 "ts|js": {
     "eachLine": {
         "prepend": "// "
     }
 }
 ```
-The above example will tell the checker to expect the license to be formatted such that each line of the license in a typescript or javascript file starts with `// `. If the license is in insert mode the license will be inserted in that format also. (Note: if specifying a file of no type such as a .editorconfig file do NOT include the starting .)
+
+The above example will tell the checker to expect the license to be formatted such that each line of the license in a typescript or javascript file starts with `// `. If the license is in insert mode the license will be inserted in that format also. 
+
+> Note: if you are specifying a file starting with a dot such as `.gitignore` do NOT include the leading dot.
+
+#### defaultFormat
+The format the license should take if a file type is iterated over by a checker that is not one of the [default formats](#default-formats) or specified in the licenseFormats section. If this value is not set then a default format of 
+
+``` json
+{
+    "prepend": "/*",
+    "append": "*/"
+}
+```
+
+will be used.
 
 ## Format object
-A format object is used in the configuration fields `default_format` and `license_formats`. The object is used to specify how a license should start, how a license should end and how each line should start and end. Alternatively it can specify a specific file that should be used as the license. Using a format object allows you to comment out licenses in files where they may have an impact if left as text and use the same license file for multiple file types.
+A format object is used in the configuration fields default_format and license_formats. The object is used to specify how a license should start, how a license should end and how each line should start and end. Alternatively it can specify a specific file that should be used as the license. Using a format object allows you to comment out licenses in files where they may have an impact if left as text and use the same license file for multiple file types.
 
 Specifying a format object to point to a file:
-```
+``` json
 {
     "file": "/my/path/to/a/license"
 }
 ```
 
 Specifying a format object to write a line at the start and end of the license:
-```
+``` json
 {
     "prepend": "<!--",
     "append": "-->"
@@ -121,48 +94,33 @@ Specifying a format object to write a line at the start and end of the license:
 ```
 
 Specifying a format object to write at the start and end of each line of the license:
-```
-    eachLine: {
+``` json
+{
+    "eachLine": {
         "prepend": "<!-- ",
         "append": " -->"
     }
+}
 ```
 
-### Default values used:
-```
+> Note: You can combine prepend, append and eachLine formats but file should be used alone.
+
+### <a name="default-formats" >Default formats</a>
+``` json
 {
-    "js|ts|css|scss|less|php|as|c|java|cpp|go|cto|acl": {
-        "prepend": "/*",
-        "append": "*/"
-    },
-    "html|xml": {
-        "prepend": "<!--",
-        "append": "-->" 
-    },
     "gitignore|npmignore|eslintignore|dockerignore|sh|py": {
         "eachLine": {
-            "prepend": "# "
-        }
+            "prepend": "# ",
+        },
     },
-    "txt": {}
+    "html|xml|svg": {
+        "prepend": "<!--",
+        "append": "-->",
+    },
+    "js|ts|css|scss|less|php|as|c|java|cpp|go|cto|acl": {
+        "prepend": "/*",
+        "append": "*/",
+    },
+    "txt": {},
 }
 ```
-
-### Example formatting config
-"license-check-and-add-config": {
-    "folder": ".",
-    "license": "header.txt",
-    "default_format": {"file": "second_header.txt"},
-    "exact_paths_method": "INCLUDE",
-    "exact_paths": ["src"],
-    "file_type_method": "EXCLUDE",
-    "file_types": [".html", ".txt", ".json"],
-    "insert_license": false,
-    "license_formats": {
-        "js|ts": {
-            "prepend": "// "
-        }
-    }
-}
-
-This example will do the same as the top example however if a file type of a file being checked is not any of those specified in the list of defaults (e.g. ts, js, css, gitignore etc) then the license text used for checking that file will be second_header.txt. If the license is in a ts or js file then the license check will check that each line of the license in the file starts with `// ` rather than using the defaults for those file types of having the whole license commented out with a multiline comment using `/*` and `*/`.

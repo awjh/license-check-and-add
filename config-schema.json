@@ -1,0 +1,75 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://github.com/awjh/license-check-and-add",
+    "type": "object",
+    "title": "license-check-and-add configuration schema",
+    "required": ["license"],
+    "properties": {
+        "license": {
+            "$id": "#/properties/license",
+            "type": "string"
+        },
+        "ignoreDefaultIgnores": {
+            "$id": "#/properties/ignoreDefaultIgnores",
+            "type": "boolean"
+        },
+        "ignore": {
+            "$id": "#/properties/ignore",
+            "anyOf": [
+                {
+                    "type": "string"
+                },
+                {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            ]
+        },
+        "trailingWhitespace": {
+            "$id": "#/properties/trailingWhitespace",
+            "type": "string",
+            "enum": ["DEFAULT", "TRIM"]
+        },
+        "output": {
+            "$id": "#/properties/output",
+            "type": "string"
+        },
+        "defaultFormat": {
+            "$ref": "#/definitions/licenseFormat"
+        },
+        "licenseFormats": {
+            "^.*$": {
+                "$ref": "#/definitions/licenseFormat"
+            }
+        }
+    },
+    "definitions": {
+        "appendPrepend": {
+            "$id": "#/definitions/appendPrepend",
+            "type": "object",
+            "properties": {
+                "append": {
+                    "type": "string"
+                },
+                "prepend": {
+                    "type": "string"
+                }
+            }
+        },
+        "licenseFormat": {
+            "$id": "#/definitions/licenseFormat",
+            "type": "object",
+            "allOf": [{ "$ref": "#/definitions/appendPrepend" }],
+            "properties": {
+                "eachLine": {
+                    "$ref": "#/definitions/appendPrepend"
+                },
+                "file": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
