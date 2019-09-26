@@ -39,13 +39,15 @@ export class LicenseManager {
         const removedLicenses = [];
 
         this.paths.forEach((filePath) => {
-            const fileContents = this.formatForCheck(fs.readFileSync(filePath).toString());
+            const fileContents = fs.readFileSync(filePath).toString();
+            const normalisedFileContents = this.formatForCheck(fileContents);
 
             const extension = path.extname(filePath) ? path.extname(filePath) : path.basename(filePath);
 
-            const formattedLicense = this.formatForCheck(this.licenseFormatter.formatLicenseForFile(extension, this.licenseText));
+            const formattedLicense = this.licenseFormatter.formatLicenseForFile(extension, this.licenseText);
+            const normalisedLicense = this.formatForCheck(formattedLicense);
 
-            if (!fileContents.includes(formattedLicense)) {
+            if (!normalisedFileContents.includes(normalisedLicense)) {
                 if (this.mode === ManagementMode.INSERT) {
                     this.insertLicense(fileContents, formattedLicense, filePath);
                     insertedLicenses.push(filePath);
