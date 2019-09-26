@@ -17,6 +17,7 @@ export class LicenseManager {
     public readonly licenseText: string;
     public readonly mode: ManagementMode;
     public readonly outputPath: string;
+    public readonly trailingWhitespace: TrailingWhitespaceMode;
 
     constructor (
         paths: string[], licenseText: string, declaredFormats: IFormatCollection, defaultFormat: ILicenseFormat,
@@ -29,6 +30,7 @@ export class LicenseManager {
         this.licenseText = licenseText;
         this.mode = mode;
         this.outputPath = outputPath;
+        this.trailingWhitespace = trailingWhitespace;
     }
 
     public manage () {
@@ -37,11 +39,11 @@ export class LicenseManager {
         const removedLicenses = [];
 
         this.paths.forEach((filePath) => {
-            const fileContents = fs.readFileSync(filePath).toString();
+            const fileContents = this.formatForCheck(fs.readFileSync(filePath).toString());
 
             const extension = path.extname(filePath) ? path.extname(filePath) : path.basename(filePath);
 
-            const formattedLicense = this.licenseFormatter.formatLicenseForFile(extension, this.licenseText);
+            const formattedLicense = this.formatForCheck(this.licenseFormatter.formatLicenseForFile(extension, this.licenseText));
 
             if (!fileContents.includes(formattedLicense)) {
                 if (this.mode === ManagementMode.INSERT) {
@@ -120,5 +122,11 @@ export class LicenseManager {
 
             return false;
         });
+    }
+
+    private formatForCheck (textBlock: string) {
+        return textBlock.split(/\r?\n/).map((line) => {
+            return this.trailingWhitespace === TrailingWhitespaceMode.DEFAULT ? line.replace(/\s+$/, '') : line;
+        }).join('\n');
     }
 }
