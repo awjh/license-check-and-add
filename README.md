@@ -48,6 +48,15 @@ Boolean value to specify whether or not to use the default ignores specified abo
 #### ignore
 Either the path to an ignore style file (e.g. gitignore) or an array of globby strings specifying which files to ignore (e.g. ["**/*.txt"]). This list will be used in combination with the default ignore list unless you specify not to use that list.
 
+#### trailingWhitespace
+By default this is set such that whitespace at the end of lines in a license is ignored. This means in `add` mode should your license contain a blank line and your formatting for that license contain a space after a prepend (for example ` * `) then the blank line would have trailing whitespace. It also means when searching for licenses (such as in `check` mode) a file will match even if its license lines finish in whitespace when the formatted license lines do not. Setting the value of this property to be `TRIM` will enforce both when checking and adding the license that the file's license contains no whitespace at the end of lines. This can be useful for ensuring that when the license is inserted it meets linting requirements.
+
+#### output
+File location where list of relevent files should be sent to.
+- `check` - list of files missing licenses
+- `add` - list of files with licenses added
+- `remove` - list of files with licenses removed
+
 #### licenseFormats
 Describes how the license should be formatted for different file types. A [format object](#format-object) should be used for each entry. You can share a format object for multiple file types by separating the file with a "|". Entries in this field will overright the [default formats](#default-format). Example:
 
@@ -59,7 +68,7 @@ Describes how the license should be formatted for different file types. A [forma
 }
 ```
 
-The above example will tell the checker to expect the license to be formatted such that each line of the license in a typescript or javascript file starts with `// `. If the license is in insert mode the license will be inserted in that format also. 
+The above example will tell the checker to expect the license to be formatted such that each line of the license in a typescript or javascript file starts with `// `. If the tool is in `add` mode the license will be inserted in that format also. 
 
 > Note: if you are specifying a file starting with a dot such as `.gitignore` do NOT include the leading dot.
 
@@ -74,9 +83,6 @@ The format the license should take if a file type is iterated over by a checker 
 ```
 
 will be used.
-
-#### trailingWhitespace
-By default this is set such that whitespace at the end of lines in a license is ignored. This means in `insert` mode should your license contain a blank line and your formatting for that license contain a space after a prepend (for example ` * `) then the blank line would have trailing whitespace. It also means when searching for licenses (such as in `check` mode) a file will match even if its license lines finish in whitespace when the formatted license lines do not. Setting the value of this property to be `TRIM` will enforce both when checking and adding the license that the file's license contains no whitespace at the end of lines. This can be useful for ensuring that when the license is inserted it meets linting requirements.
 
 ## Format object
 A format object is used in the configuration fields default_format and license_formats. The object is used to specify how a license should start, how a license should end and how each line should start and end. Alternatively it can specify a specific file that should be used as the license. Using a format object allows you to comment out licenses in files where they may have an impact if left as text and use the same license file for multiple file types.
