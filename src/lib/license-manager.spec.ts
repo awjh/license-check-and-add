@@ -323,4 +323,33 @@ describe ('#LicenseManager', () => {
             expect(fsWriteFileStub).to.have.been.calledWithExactly('some file', 'some\nmulti line\nlike license\nsome file contents');
         });
     });
+
+    describe ('formatForCheck', () => {
+        let lm: LicenseManager;
+
+        beforeEach(() => {
+            lm = new MockeryLicenseManager(
+                ['some.txt', '.dotfile'], 'some license text', mockFormats, DEFAULT_FORMAT,
+                TrailingWhitespaceMode.DEFAULT, ManagementMode.CHECK,
+            );
+        });
+
+        it ('should normalise line endings and trim whitespace', () => {
+            const multiLineLicense = 'some\r\nmulti line   \r\nlicense ';
+
+            const formatted = (lm as any).formatForCheck(multiLineLicense);
+
+            expect(formatted).to.deep.equal('some\nmulti line\nlicense');
+        });
+
+        it ('should normalise line endings and leave whitespace', () => {
+            (lm as any).trailingWhitespace = TrailingWhitespaceMode.TRIM;
+
+            const multiLineLicense = 'some\r\nmulti line   \r\nlicense ';
+
+            const formatted = (lm as any).formatForCheck(multiLineLicense);
+
+            expect(formatted).to.deep.equal('some\nmulti line   \nlicense ');
+        });
+    });
 });

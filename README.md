@@ -75,6 +75,9 @@ The format the license should take if a file type is iterated over by a checker 
 
 will be used.
 
+#### trailingWhitespace
+By default this is set such that whitespace at the end of lines in a license is ignored. This means in `insert` mode should your license contain a blank line and your formatting for that license contain a space after a prepend (for example ` * `) then the blank line would have trailing whitespace. It also means when searching for licenses (such as in `check` mode) a file will match even if its license lines finish in whitespace when the formatted license lines do not. Setting the value of this property to be `TRIM` will enforce both when checking and adding the license that the file's license contains no whitespace at the end of lines. This can be useful for ensuring that when the license is inserted it meets linting requirements.
+
 ## Format object
 A format object is used in the configuration fields default_format and license_formats. The object is used to specify how a license should start, how a license should end and how each line should start and end. Alternatively it can specify a specific file that should be used as the license. Using a format object allows you to comment out licenses in files where they may have an impact if left as text and use the same license file for multiple file types.
 
