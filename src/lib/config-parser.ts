@@ -2,6 +2,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import { DEFAULT_FORMAT } from '../constants';
 import { IFormatCollection, ILicenseFormat } from './license-formatter';
+import { ManagementMode } from './license-manager';
 
 export enum TrailingWhitespaceMode {
     DEFAULT = 0,
@@ -15,22 +16,25 @@ export interface IInputConfig {
     license: string;
     licenseFormats?: IFormatCollection;
     output?: string; // could make it a command line option e.g. -o formats it nicely and then they can pipe it out to whatever
+    regexIdentifier?: string;
     trailingWhitespace?: 'DEFAULT' | 'TRIM';
 }
 
 export interface IConfig {
-    defaultFormat: object;
+    defaultFormat: ILicenseFormat;
     ignoreDefaultIgnores: boolean;
     ignore: string | string[];
     license: string;
     licenseFormats: IFormatCollection;
     output?: string;
+    regexIdentifier?: string;
+    regexReplacement?: string;
     trailingWhitespace: TrailingWhitespaceMode;
 }
 
 const REQUIRED_FIELDS: string[] = ['license'];
 
-export function configParser (filePath: string): IConfig {
+export function configParser (filePath: string, mode: ManagementMode, regexReplacement?: string): IConfig {
     const fileConfig = fs.readJSONSync(filePath) as IInputConfig;
 
     for (const REQUIRED_FIELD of REQUIRED_FIELDS) {
@@ -45,6 +49,7 @@ export function configParser (filePath: string): IConfig {
         ignoreDefaultIgnores: fileConfig.ignoreDefaultIgnores || false,
         license: fs.readFileSync(path.resolve(process.cwd(), fileConfig.license)).toString(),
         licenseFormats: fileConfig.licenseFormats || {},
+        regexIdentifier: fileConfig.regexIdentifier,
         trailingWhitespace: TrailingWhitespaceMode.DEFAULT,
     };
 
@@ -65,6 +70,12 @@ export function configParser (filePath: string): IConfig {
 
     if (fileConfig.output) {
         config.output = path.resolve(process.cwd(), fileConfig.output);
+    }
+
+    if (regexReplacement) {
+        config.regexReplacement = regexReplacement;
+    } else if (fileConfig.regexIdentifier && mode === ManagementMode.INSERT) {
+        throw new Error('Must supply regexReplacement option when using regexIdentifier in config when in INSERT mode');
     }
 
     return config;

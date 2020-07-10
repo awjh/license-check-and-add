@@ -10,6 +10,16 @@ export enum ManagementMode {
     REMOVE,
 }
 
+export interface IRegex {
+    identifier: string;
+}
+
+export interface IInsertRegex extends IRegex {
+    replacement: string;
+}
+
+const REGEX_MARKER = 'I_AM_A_REGEX_MARKER';
+
 export class LicenseManager {
 
     public readonly paths: string[];
@@ -18,10 +28,13 @@ export class LicenseManager {
     public readonly mode: ManagementMode;
     public readonly outputPath: string;
     public readonly trailingWhitespace: TrailingWhitespaceMode;
+    public readonly regex: IRegex | IInsertRegex;
+
+    private readonly formattedLicenses: Map<string, {formatted: string, normalised: string}>;
 
     constructor (
         paths: string[], licenseText: string, declaredFormats: IFormatCollection, defaultFormat: ILicenseFormat,
-        trailingWhitespace: TrailingWhitespaceMode, mode: ManagementMode, outputPath: string,
+        trailingWhitespace: TrailingWhitespaceMode, mode: ManagementMode, outputPath: string, regex?: IRegex | IInsertRegex,
     ) {
         this.paths = paths;
         this.licenseFormatter = declaredFormats ?
@@ -31,6 +44,8 @@ export class LicenseManager {
         this.mode = mode;
         this.outputPath = outputPath;
         this.trailingWhitespace = trailingWhitespace;
+        this.regex = regex;
+        this.formattedLicenses = new Map();
     }
 
     public manage () {
@@ -40,16 +55,28 @@ export class LicenseManager {
 
         this.paths.forEach((filePath) => {
             const fileContents = fs.readFileSync(filePath).toString();
-            const normalisedFileContents = this.formatForCheck(fileContents);
+            const normalisedFileContents = this.formatForCheck(fileContents, this.regex);
 
             const extension = path.extname(filePath) ? path.extname(filePath) : path.basename(filePath);
 
-            const formattedLicense = this.licenseFormatter.formatLicenseForFile(extension, this.licenseText);
-            const normalisedLicense = this.formatForCheck(formattedLicense);
+            let existing: {formatted: string, normalised: string};
 
-            if (!normalisedFileContents.includes(normalisedLicense)) {
+            if (this.formattedLicenses.has(extension)) {
+                existing = this.formattedLicenses.get(extension);
+            }
+
+            const formattedLicense = existing ? existing.formatted
+                                              : this.licenseFormatter.formatLicenseForFile(extension, this.licenseText);
+            const normalisedLicense = existing ? existing.normalised
+                                               : this.formatForCheck(formattedLicense, this.regex);
+
+            if (!existing) {
+                this.formattedLicenses.set(extension, {formatted: formattedLicense, normalised: normalisedLicense});
+            }
+
+            if (!normalisedFileContents.match(new RegExp(normalisedLicense))) {
                 if (this.mode === ManagementMode.INSERT) {
-                    this.insertLicense(fileContents, formattedLicense, filePath);
+                    this.insertLicense(fileContents, formattedLicense, filePath, this.regex as IInsertRegex);
                     insertedLicenses.push(filePath);
                 } else if (this.mode === ManagementMode.CHECK) {
                     console.error('\x1b[31m\u2717\x1b[0m License not found in', filePath);
@@ -85,8 +112,17 @@ export class LicenseManager {
         }
     }
 
-    private insertLicense (fileContents: string, formattedLicense: string, filePath: string) {
+    private insertLicense (
+        fileContents: string, formattedLicense: string, filePath: string,
+        regex?: IInsertRegex,
+    ) {
         let newText = '';
+
+        if (regex) {
+            formattedLicense = formattedLicense.split(regex.identifier).map((el, idx) => {
+                return idx % 2 === 0 ? el : regex.replacement;
+            }).join('');
+        }
 
         if (fileContents.startsWith('#!')) {
             const lines = fileContents.split(/\r?\n/);
@@ -126,9 +162,28 @@ export class LicenseManager {
         });
     }
 
-    private formatForCheck (textBlock: string) {
-        return textBlock.split(/\r?\n/).map((line) => {
+    private formatForCheck (textBlock: string, regex?: IRegex) {
+        const regexIdentifier = regex ? regex.identifier : null;
+
+        let regexes;
+
+        if (regexIdentifier) {
+            const split = textBlock.split(regexIdentifier);
+            textBlock = split.filter((_, idx) => idx % 2 === 0).join(REGEX_MARKER);
+            regexes = split.filter((_, idx) => idx % 2 !== 0);
+        }
+
+        let formatted = textBlock.split(/\r?\n/).map((line) => {
             return this.trailingWhitespace === TrailingWhitespaceMode.DEFAULT ? line.replace(/\s+$/, '') : line;
         }).join('\n');
+
+        if (regexIdentifier) {
+            formatted = formatted.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') // ESCAPE READY FOR REGEX
+            .split(REGEX_MARKER).map((el, idx, orig) => {
+                return idx !== orig.length - 1 ? el + regexes[idx] : el;
+            }).join();
+        }
+
+        return formatted;
     }
 }
