@@ -26,7 +26,6 @@ describe ('#Scenario', () => {
     });
 
     describe ('Check licenses', () => {
-        console.log(`node ${bin} check -f ${config}`);
         it ('should check licenses', () => {
             expect(() => {
                 childProcess.execSync(`node ${bin} check -f ${config}`);
