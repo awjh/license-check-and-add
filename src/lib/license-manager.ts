@@ -1,21 +1,13 @@
 import * as fs from 'fs-extra';
 import { EOL } from 'os';
 import * as path from 'path';
-import { TrailingWhitespaceMode } from './config-parser';
+import { IRegexConfig, TrailingWhitespaceMode } from './config-parser';
 import { IFormatCollection, ILicenseFormat, LicenseFormatter } from './license-formatter';
 
 export enum ManagementMode {
     CHECK = 1,
     INSERT,
     REMOVE,
-}
-
-export interface IRegex {
-    identifier: string;
-}
-
-export interface IInsertRegex extends IRegex {
-    replacement: string;
 }
 
 const REGEX_MARKER = 'I_AM_A_REGEX_MARKER';
@@ -28,13 +20,13 @@ export class LicenseManager {
     public readonly mode: ManagementMode;
     public readonly outputPath: string;
     public readonly trailingWhitespace: TrailingWhitespaceMode;
-    public readonly regex: IRegex | IInsertRegex;
+    public readonly regex: IRegexConfig;
 
     private readonly formattedLicenses: Map<string, {formatted: string, normalised: string}>;
 
     constructor (
         paths: string[], licenseText: string, declaredFormats: IFormatCollection, defaultFormat: ILicenseFormat,
-        trailingWhitespace: TrailingWhitespaceMode, mode: ManagementMode, outputPath: string, regex?: IRegex | IInsertRegex,
+        trailingWhitespace: TrailingWhitespaceMode, mode: ManagementMode, outputPath?: string, regex?: IRegexConfig,
     ) {
         this.paths = paths;
         this.licenseFormatter = declaredFormats ?
@@ -74,16 +66,21 @@ export class LicenseManager {
                 this.formattedLicenses.set(extension, {formatted: formattedLicense, normalised: normalisedLicense});
             }
 
+            // tslint:disable-next-line: max-line-length
+            fs.writeFileSync('/home/andrew/Documents/license-check-and-add/test/logs/nomalised' + path.basename(filePath) + '.log', normalisedFileContents);
+            // tslint:disable-next-line: max-line-length
+            fs.writeFileSync('/home/andrew/Documents/license-check-and-add/test/logs/normalisedLicense' + extension + '.log' , normalisedLicense);
+
             if (!normalisedFileContents.match(new RegExp(normalisedLicense))) {
                 if (this.mode === ManagementMode.INSERT) {
-                    this.insertLicense(fileContents, formattedLicense, filePath, this.regex as IInsertRegex);
+                    this.insertLicense(fileContents, formattedLicense, filePath, this.regex as IRegexConfig);
                     insertedLicenses.push(filePath);
                 } else if (this.mode === ManagementMode.CHECK) {
                     console.error('\x1b[31m\u2717\x1b[0m License not found in', filePath);
                     missingLicenses.push(filePath);
                 }
             } else if (this.mode === ManagementMode.REMOVE) {
-                this.removeLicense(fileContents, formattedLicense, filePath);
+                this.removeLicense(fileContents, normalisedLicense, filePath);
                 removedLicenses.push(filePath);
             }
         });
@@ -114,14 +111,16 @@ export class LicenseManager {
 
     private insertLicense (
         fileContents: string, formattedLicense: string, filePath: string,
-        regex?: IInsertRegex,
+        regex?: IRegexConfig,
     ) {
         let newText = '';
 
         if (regex) {
-            formattedLicense = formattedLicense.split(regex.identifier).map((el, idx) => {
-                return idx % 2 === 0 ? el : regex.replacement;
-            }).join('');
+            formattedLicense = formattedLicense.split(/\r?\n/).map((line) => {
+                return line.split(regex.identifier).map((el, idx) => {
+                    return idx % 2 === 0 ? el : regex.replacement;
+                }).join('');
+            }).join(EOL);
         }
 
         if (fileContents.startsWith('#!')) {
@@ -140,14 +139,14 @@ export class LicenseManager {
         fs.writeFileSync(filePath, newText);
     }
 
-    private removeLicense (fileContents: string, formattedLicense: string, filePath: string) {
+    private removeLicense (fileContents: string, normalisedLicense: string, filePath: string) {
         const fileLines = fileContents.split(/\r?\n/);
-        const licenseLines = formattedLicense.split(/\r?\n/);
+        const licenseLines = normalisedLicense.split(/\r?\n/).map((line) => '^' + line);
 
         fileLines.some((fileLine, idx) => {
-            if (fileLine === licenseLines[0]) {
+            if (fileLine.match(licenseLines[0])) {
                 const match = fileLines.slice(idx + 1, idx + licenseLines.length).every((nextLine, subsetIdx) => {
-                    return nextLine === licenseLines[subsetIdx + 1];
+                    return nextLine.match(licenseLines[subsetIdx + 1]);
                 });
 
                 if (match) {
@@ -162,13 +161,18 @@ export class LicenseManager {
         });
     }
 
-    private formatForCheck (textBlock: string, regex?: IRegex) {
+    private formatForCheck (textBlock: string, regex?: IRegexConfig) {
         const regexIdentifier = regex ? regex.identifier : null;
 
         let regexes;
 
         if (regexIdentifier) {
             const split = textBlock.split(regexIdentifier);
+
+            if (split.length % 2 === 0) {
+                throw new Error('Odd number of regex identifiers found. One must be missing its close');
+            }
+
             textBlock = split.filter((_, idx) => idx % 2 === 0).join(REGEX_MARKER);
             regexes = split.filter((_, idx) => idx % 2 !== 0);
         }
@@ -181,7 +185,7 @@ export class LicenseManager {
             formatted = formatted.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') // ESCAPE READY FOR REGEX
             .split(REGEX_MARKER).map((el, idx, orig) => {
                 return idx !== orig.length - 1 ? el + regexes[idx] : el;
-            }).join();
+            }).join('');
         }
 
         return formatted;

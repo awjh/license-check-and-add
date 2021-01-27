@@ -3,7 +3,9 @@ import * as mockery from 'mockery';
 import * as path from 'path';
 import * as sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { CONFIG_OPTION } from '../constants';
+import { CONFIG_OPTION, DEFAULT_FORMAT, REGEX_OPTION } from '../constants';
+import { ConfigParser, IConfig, TrailingWhitespaceMode } from '../lib/config-parser';
+import { FileFinder } from '../lib/file-finder';
 import { LicenseManager, ManagementMode } from '../lib/license-manager';
 
 const expect = chai.expect;
@@ -13,20 +15,20 @@ describe ('#CommandUtils', () => {
     let sandbox: sinon.SinonSandbox;
 
     let getPathsStub: sinon.SinonStub;
-    let configParserStub: sinon.SinonStub;
     let LicenseManagerStub: sinon.SinonStub;
     let mockLicenseManager: sinon.SinonStubbedInstance<LicenseManager>;
 
+    let configParserStub: sinon.SinonStub;
+
     let MockUtils;
 
-    const mockConfig = {
-        defaultFormat: 'some format',
+    const mockConfig: IConfig = {
+        defaultFormat: DEFAULT_FORMAT,
         ignore: ['some', 'stuff', 'to', 'ignore'],
-        ignoreDefaultIgnores: 'ignore default',
+        ignoreDefaultIgnores: true,
         license: 'some license',
-        licenseFormats: 'some formats',
-        output: 'some outpu',
-        trailingWhitespace: 'trail the whitespace',
+        licenseFormats: {},
+        trailingWhitespace: TrailingWhitespaceMode.DEFAULT,
     };
 
     before (() => {
@@ -38,14 +40,13 @@ describe ('#CommandUtils', () => {
 
     beforeEach (() => {
         sandbox = sinon.createSandbox();
-        getPathsStub = sandbox.stub().returns('some paths');
-        configParserStub = sandbox.stub().returns(mockConfig);
         mockLicenseManager = sandbox.createStubInstance(LicenseManager);
         LicenseManagerStub = sandbox.stub().returns(mockLicenseManager);
 
-        mockery.registerMock('../lib/file-finder', { getPaths: getPathsStub });
-        mockery.registerMock('../lib/config-parser', { configParser: configParserStub });
         mockery.registerMock('../lib/license-manager', { LicenseManager: LicenseManagerStub });
+
+        configParserStub = sandbox.stub(ConfigParser, 'parse').returns(mockConfig);
+        getPathsStub = sandbox.stub(FileFinder, 'getPaths').returns(['some paths']);
 
         delete require.cache[require.resolve('./utils.ts')];
         MockUtils = require('./utils.ts');
@@ -81,13 +82,16 @@ describe ('#CommandUtils', () => {
         it ('should setup license manager and manage', () => {
             const mockArgs = {};
             mockArgs[CONFIG_OPTION] = 'some config file';
+            mockArgs[REGEX_OPTION] = 'some regex option';
+
+            const expectedConfigPath = path.resolve(process.cwd(), 'some config file');
 
             MockUtils.manageLicense(mockArgs, ManagementMode.CHECK);
 
-            expect(configParserStub).to.have.been.calledOnceWithExactly(path.resolve(process.cwd(), 'some config file'));
+            expect(configParserStub).to.have.been.calledOnceWithExactly(expectedConfigPath, ManagementMode.CHECK, 'some regex option');
             expect(getPathsStub).to.have.been.calledOnceWithExactly(mockConfig.ignore, mockConfig.ignoreDefaultIgnores);
             expect(LicenseManagerStub).to.have.been.calledOnceWithExactly(
-                'some paths', mockConfig.license, mockConfig.licenseFormats, mockConfig.defaultFormat,
+                ['some paths'], mockConfig.license, mockConfig.licenseFormats, mockConfig.defaultFormat,
                 mockConfig.trailingWhitespace, ManagementMode.CHECK, mockConfig.output,
             );
             expect(mockLicenseManager.manage).to.have.been.calledOnceWithExactly();

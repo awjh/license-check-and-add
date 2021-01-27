@@ -3,7 +3,7 @@ import * as mockery from 'mockery';
 import * as path from 'path';
 import * as sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { DEFAULT_IGNORES } from './file-finder';
+import { DEFAULT_IGNORES, FileFinder as FileFinderDef } from './file-finder';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -13,6 +13,7 @@ describe ('#FileFinder', () => {
     let sandbox: sinon.SinonSandbox;
     let globbySyncStub: sinon.SinonStub;
     let gitignoreToGlobStub: sinon.SinonStub;
+    let FileFinder: typeof FileFinderDef;
 
     const ignoreInput = ['should', 'ignore'];
 
@@ -22,8 +23,6 @@ describe ('#FileFinder', () => {
         dot: true,
         expandDirectories: true,
     };
-
-    let getPaths;
 
     before (() => {
         mockery.enable({
@@ -42,7 +41,7 @@ describe ('#FileFinder', () => {
         mockery.registerMock('gitignore-to-glob', gitignoreToGlobStub);
 
         delete require.cache[require.resolve('./file-finder')];
-        getPaths = require('./file-finder').getPaths;
+        FileFinder = require('./file-finder').FileFinder;
     });
 
     afterEach(() => {
@@ -55,14 +54,14 @@ describe ('#FileFinder', () => {
     });
 
     it ('should return the list of files from globby filtered by ignore list passed', () => {
-        const paths = getPaths(ignoreInput, true);
+        const paths = FileFinder.getPaths(ignoreInput, true);
 
         expect(paths).to.deep.equal(mockValidPaths);
         expect(globbySyncStub).to.have.been.calledOnceWithExactly(['**/*'], Object.assign(globbyConfig, {ignore: ignoreInput}));
     });
 
     it ('should return the list of files from globby filtered by ignore list passed and default ignore', () => {
-        const paths = getPaths(ignoreInput, false);
+        const paths = FileFinder.getPaths(ignoreInput, false);
 
         expect(paths).to.deep.equal(mockValidPaths);
         expect(globbySyncStub).to.have.been.calledOnceWithExactly(
@@ -71,7 +70,7 @@ describe ('#FileFinder', () => {
     });
 
     it ('should return the list of file from globby filtered by ignore file passed and default ignores', () => {
-        const paths = getPaths('some/file/path', false);
+        const paths = FileFinder.getPaths('some/file/path', false);
 
         expect(paths).to.deep.equal(mockValidPaths);
         expect(globbySyncStub).to.have.been.calledOnceWithExactly(
