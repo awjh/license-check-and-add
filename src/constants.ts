@@ -15,11 +15,6 @@ export const OPTIONS: {[s: string]: Options} = {
         required: false,
         type: 'string',
     },
-    'regex-replacement': {
-        alias: ['r'],
-        required: false,
-        type: 'string',
-    },
 };
 
 export const CONFIG_OPTION = 'config-file';

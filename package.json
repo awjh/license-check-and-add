@@ -1,6 +1,6 @@
 {
   "name": "license-check-and-add",
-  "version": "3.1.0fi",
+  "version": "3.1.0",
   "description": "A tool to enable the checking, inserting and removal of licenses",
   "bin": {
     "license-check-and-add": "dist/src/cli.js"
