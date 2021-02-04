@@ -92,7 +92,7 @@ describe ('#CommandUtils', () => {
             expect(getPathsStub).to.have.been.calledOnceWithExactly(mockConfig.ignore, mockConfig.ignoreDefaultIgnores);
             expect(LicenseManagerStub).to.have.been.calledOnceWithExactly(
                 ['some paths'], mockConfig.license, mockConfig.licenseFormats, mockConfig.defaultFormat,
-                mockConfig.trailingWhitespace, ManagementMode.CHECK, mockConfig.output,
+                mockConfig.trailingWhitespace, ManagementMode.CHECK, mockConfig.output, mockConfig.regex,
             );
             expect(mockLicenseManager.manage).to.have.been.calledOnceWithExactly();
         });

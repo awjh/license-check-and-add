@@ -1,3 +1,4 @@
+
 *.txt
 !sub_directory/text_file_to_not_ignore.txt
 sub_directory/sub_sub_directory_to_ignore

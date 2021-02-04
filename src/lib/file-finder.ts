@@ -14,7 +14,7 @@ export class FileFinder {
 
         if (!Array.isArray(ignore)) {
             console.debug('Using ignore file');
-            includes = includes.concat(gitignoreToGlob(path.resolve(process.cwd(), ignore as string)));
+            includes = includes.concat(gitignoreToGlob(path.resolve(process.cwd(), ignore as string)), '!' + ignore);
         } else {
             ignores = ignore;
         }

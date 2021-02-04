@@ -74,7 +74,7 @@ describe ('#FileFinder', () => {
 
         expect(paths).to.deep.equal(mockValidPaths);
         expect(globbySyncStub).to.have.been.calledOnceWithExactly(
-            ['**/*', 'some', 'ignore', 'values'], Object.assign(globbyConfig, {ignore: DEFAULT_IGNORES}),
+            ['**/*', 'some', 'ignore', 'values', '!some/file/path'], Object.assign(globbyConfig, {ignore: DEFAULT_IGNORES}),
         );
         expect(gitignoreToGlobStub).to.have.been.calledOnceWithExactly(path.resolve(process.cwd(), 'some/file/path'));
     });

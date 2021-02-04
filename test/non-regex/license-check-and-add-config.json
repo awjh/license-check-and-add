@@ -1,0 +1,19 @@
+{
+    "ignore": ["*.txt", "**/!(text_file_to_not_ignore).txt", "sub_directory/sub_sub_directory_to_ignore"],
+    "license": "LICENSE",
+    "licenseFormats": {
+        "js": {
+            "prepend": "/*",
+            "append": " */",
+            "eachLine": {
+                "prepend": " * "
+            }
+        },
+        "dotfile": {
+            "eachLine": {
+                "prepend": "# "
+            }
+        }
+    },
+    "trailingWhitespace": "TRIM"
+}

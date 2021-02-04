@@ -37,7 +37,7 @@ export class LicenseFormatter {
 
     public formatLicenseForFile (extension: string, licenseText: string): string {
         let format = this.defaultFormat;
-        licenseText = licenseText.trim();
+        licenseText = licenseText.replace(/^(\r\n|\n)+|(\r\n|\n)+$/g, '');
 
         if (this.licenseFormats.hasOwnProperty(extension)) {
             format = this.licenseFormats[extension];

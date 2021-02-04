@@ -47,7 +47,7 @@ export class LicenseManager {
 
         this.paths.forEach((filePath) => {
             const fileContents = fs.readFileSync(filePath).toString();
-            const normalisedFileContents = this.formatForCheck(fileContents, this.regex);
+            const normalisedFileContents = this.formatForCheck(fileContents, false, this.regex);
 
             const extension = path.extname(filePath) ? path.extname(filePath) : path.basename(filePath);
 
@@ -60,16 +60,11 @@ export class LicenseManager {
             const formattedLicense = existing ? existing.formatted
                                               : this.licenseFormatter.formatLicenseForFile(extension, this.licenseText);
             const normalisedLicense = existing ? existing.normalised
-                                               : this.formatForCheck(formattedLicense, this.regex);
+                                               : this.formatForCheck(formattedLicense, true, this.regex);
 
             if (!existing) {
                 this.formattedLicenses.set(extension, {formatted: formattedLicense, normalised: normalisedLicense});
             }
-
-            // tslint:disable-next-line: max-line-length
-            fs.writeFileSync('/home/andrew/Documents/license-check-and-add/test/logs/nomalised' + path.basename(filePath) + '.log', normalisedFileContents);
-            // tslint:disable-next-line: max-line-length
-            fs.writeFileSync('/home/andrew/Documents/license-check-and-add/test/logs/normalisedLicense' + extension + '.log' , normalisedLicense);
 
             if (!normalisedFileContents.match(new RegExp(normalisedLicense))) {
                 if (this.mode === ManagementMode.INSERT) {
@@ -161,7 +156,7 @@ export class LicenseManager {
         });
     }
 
-    private formatForCheck (textBlock: string, regex?: IRegexConfig) {
+    private formatForCheck (textBlock: string, escapeRegex: boolean, regex?: IRegexConfig) {
         const regexIdentifier = regex ? regex.identifier : null;
 
         let regexes;
@@ -181,7 +176,7 @@ export class LicenseManager {
             return this.trailingWhitespace === TrailingWhitespaceMode.DEFAULT ? line.replace(/\s+$/, '') : line;
         }).join('\n');
 
-        if (regexIdentifier) {
+        if (escapeRegex) {
             formatted = formatted.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') // ESCAPE READY FOR REGEX
             .split(REGEX_MARKER).map((el, idx, orig) => {
                 return idx !== orig.length - 1 ? el + regexes[idx] : el;

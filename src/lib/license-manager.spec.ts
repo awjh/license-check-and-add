@@ -487,7 +487,7 @@ describe ('#LicenseManager', () => {
         it ('should normalise line endings and trim whitespace', () => {
             const multiLineLicense = 'some\r\nmulti line   \r\nlicense ';
 
-            const formatted = (licenseManager as any).formatForCheck(multiLineLicense);
+            const formatted = (licenseManager as any).formatForCheck(multiLineLicense, true);
 
             expect(formatted).to.deep.equal('some\nmulti line\nlicense');
         });
@@ -497,7 +497,7 @@ describe ('#LicenseManager', () => {
 
             const multiLineLicense = 'some\r\nmulti line   \r\nlicense ';
 
-            const formatted = (licenseManager as any).formatForCheck(multiLineLicense);
+            const formatted = (licenseManager as any).formatForCheck(multiLineLicense, true);
 
             expect(formatted).to.deep.equal('some\nmulti line   \nlicense ');
         });
@@ -506,14 +506,14 @@ describe ('#LicenseManager', () => {
             const multiLineLicense = 'some\r\n##multi line   \r\n##l{1}cense## with bad regex identifying';
 
             expect(() => {
-                (licenseManager as any).formatForCheck(multiLineLicense, mockRegex);
+                (licenseManager as any).formatForCheck(multiLineLicense, false, mockRegex);
             }).to.throw('Odd number of regex identifiers found. One must be missing its close');
         });
 
         it ('should normalise and handle regex', () => {
             const multiLineLicense = 'some\r\nmulti line   \r\n##l{1}cense## with regex ';
 
-            const formatted = (licenseManager as any).formatForCheck(multiLineLicense, mockRegex);
+            const formatted = (licenseManager as any).formatForCheck(multiLineLicense, true, mockRegex);
 
             expect(formatted).to.deep.equal('some\nmulti line\nl{1}cense with regex');
         });
@@ -521,9 +521,17 @@ describe ('#LicenseManager', () => {
         it ('should normalise and handle regex when regex and escape characters in non regex', () => {
             const multiLineLicense = 'some\r\nmulti line (ooh bracket)  \r\n##l{1}cense## with regex ';
 
-            const formatted = (licenseManager as any).formatForCheck(multiLineLicense, mockRegex);
+            const formatted = (licenseManager as any).formatForCheck(multiLineLicense, true, mockRegex);
 
             expect(formatted).to.deep.equal('some\nmulti line \\(ooh bracket\\)\nl{1}cense with regex');
+        });
+
+        it ('should normalise and but not escape regex', () => {
+            const multiLineLicense = 'some\r\nmulti line   \r\nwith regex ^characters$';
+
+            const formatted = (licenseManager as any).formatForCheck(multiLineLicense, false, mockRegex);
+
+            expect(formatted).to.deep.equal('some\nmulti line\nwith regex ^characters$');
         });
     });
 });
