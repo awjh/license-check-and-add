@@ -66,11 +66,6 @@ export class LicenseManager {
                 this.formattedLicenses.set(extension, {formatted: formattedLicense, normalised: normalisedLicense});
             }
 
-            // tslint:disable-next-line: max-line-length
-            fs.writeFileSync('/home/andrew/Documents/license-check-and-add/test/logs/nomalised' + path.basename(filePath) + '.log', normalisedFileContents);
-            // tslint:disable-next-line: max-line-length
-            fs.writeFileSync('/home/andrew/Documents/license-check-and-add/test/logs/normalisedLicense' + extension + '.log' , normalisedLicense);
-
             if (!normalisedFileContents.match(new RegExp(normalisedLicense))) {
                 if (this.mode === ManagementMode.INSERT) {
                     this.insertLicense(fileContents, formattedLicense, filePath, this.regex as IRegexConfig);
