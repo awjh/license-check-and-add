@@ -2,17 +2,18 @@ import * as chai from 'chai';
 import * as childProcess from 'child_process';
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import { directoriesMatch } from '../utils';
 
 const expect = chai.expect;
 
-describe ('#Scenario', () => {
+describe ('#Non Regex', () => {
 
-    const packageJson = fs.readJSONSync(path.resolve(__dirname, '../package.json'));
+    const packageJson = fs.readJSONSync(path.resolve(__dirname, '../../package.json'));
 
     const pwd = process.cwd();
 
     const tmp = '/tmp/license-check-and-add';
-    const bin = path.resolve(__dirname, '..', packageJson.bin['license-check-and-add']);
+    const bin = path.resolve(__dirname, '../..', packageJson.bin['license-check-and-add']);
     const config = path.resolve(__dirname, 'license-check-and-add-config.json');
 
     before (() => {
@@ -57,16 +58,3 @@ describe ('#Scenario', () => {
         });
     });
 });
-
-function directoriesMatch (original, goal): boolean {
-    return fs.readdirSync(original).every((fileOrDir) => {
-        const fullPath = path.resolve(original, fileOrDir);
-        const goalPath = path.resolve(goal, fileOrDir);
-
-        if (fs.lstatSync(fullPath).isDirectory()) {
-            return directoriesMatch(fullPath, goalPath);
-        }
-
-        return fs.readFileSync(fullPath).toString() === fs.readFileSync(goalPath).toString();
-    });
-}

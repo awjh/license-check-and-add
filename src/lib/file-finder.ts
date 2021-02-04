@@ -7,25 +7,26 @@ export const DEFAULT_IGNORES = [
     '**/LICENSE*', '**/*.png', '**/*.jpg', '**/*.jpeg', '**/*.gif', '**/*.tif', '**/*.ico', '**/*.json', '**/*.zip', '**/*.tgz',
 ];
 
-export function getPaths (ignore: string | string[], ignoreDefaultIgnores: boolean): string[] {
+export class FileFinder {
+    public static getPaths (ignore: string | string[], ignoreDefaultIgnores: boolean): string[] {
+        let includes = ['**/*'];
+        let ignores = [];
 
-    let includes = ['**/*'];
-    let ignores = [];
+        if (!Array.isArray(ignore)) {
+            console.debug('Using ignore file');
+            includes = includes.concat(gitignoreToGlob(path.resolve(process.cwd(), ignore as string)), '!' + ignore);
+        } else {
+            ignores = ignore;
+        }
 
-    if (!Array.isArray(ignore)) {
-        console.debug('Using ignore file');
-        includes = includes.concat(gitignoreToGlob(path.resolve(process.cwd(), ignore as string)));
-    } else {
-        ignores = ignore;
+        if (!ignoreDefaultIgnores) {
+            ignores = ignores.concat(DEFAULT_IGNORES);
+        }
+
+        return globby.sync(includes, {
+            dot: true,
+            expandDirectories: true,
+            ignore: ignores,
+        });
     }
-
-    if (!ignoreDefaultIgnores) {
-        ignores = ignores.concat(DEFAULT_IGNORES);
-    }
-
-    return globby.sync(includes, {
-        dot: true,
-        expandDirectories: true,
-        ignore: ignores,
-    });
 }

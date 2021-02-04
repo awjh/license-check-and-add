@@ -100,7 +100,7 @@ describe ('#LicenseFormatter', () => {
             separateStub = sandbox.stub(LicenseFormatter.prototype as any, 'separateFileTypesInFormat').onFirstCall().returns(mockFormats);
         });
 
-        const mockLicenseText = fs.readFileSync(path.resolve(__dirname, '../../test/original-files/LICENSE'), 'utf-8');
+        const mockLicenseText = fs.readFileSync(path.resolve(__dirname, '../../test/non-regex/original-files/LICENSE'), 'utf-8');
 
         it ('should use an already formatted license file when one specified', () => {
             mockery.enable({
