@@ -15,7 +15,7 @@ REPODIR=$(pwd)
 git remote add repo https://${GHTOKEN}@github.com/awjh/license-check-and-add # add repo with token so we have push permissions
 git fetch repo
 
-git checkout v4-dev
+git checkout master
 
 VERSION=$(echo $TAG | grep -Eo '([0-9]+\.){2}[0-9]+')
 
@@ -26,5 +26,5 @@ mv tmp.json $REPODIR/package.json
 if [[ -n $(git status -s) ]]; then
     git add --all
     git -c user.name=${GHUSER} -c user.email=${GHEMAIL} commit -s -m "Release required version bump $VERSION [skip ci]"
-    git push repo v4-dev
+    git push repo master
 fi

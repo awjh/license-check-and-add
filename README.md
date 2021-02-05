@@ -67,7 +67,7 @@ By default this is set such that whitespace at the end of lines in a license is 
 
 #### regexIdentifier
 It is possible with this tool to supply a license which contains regex pattern matching so that it can match multiple formats of the same license. The string here is the string that will be on either side of the pattern in your license so that it can be identified against regex characters that are not intended for pattern mtaching such as full stops. For example if you had a license with the line `Copyright (c) ##[0-9]{4}##` then the value for this configuration would be `##` as that bookends the pattern. Note that patterns must be entirely contained within one line and must be bookended. You may have multiple patterns in one line. You can find an example of this in the regex folder of our tests:
-- Config -> https://github.com/awjh/license-check-and-add/blob/v4-dev/test/regex/license-check-and-add-config.json
+- Config -> https://github.com/awjh/license-check-and-add/blob/master/test/regex/license-check-and-add-config.json
 - License -> https://github.com/awjh/license-check-and-add/blob/master/test/regex/original-files/LICENSE
 
 #### output
