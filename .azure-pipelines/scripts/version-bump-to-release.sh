@@ -13,13 +13,15 @@ cd ../.. # move to where package.json is
 git remote add repo https://${GHTOKEN}@github.com/awjh/license-check-and-add
 git fetch repo
 
-git checkout master
+git checkout v4-dev
 
 VERSION=$(echo $TAG | grep -Eo '([0-9]+\.){2}[0-9]+')
 
 jq -r ".version=\"$VERSION\"" "$DIR/package.json" | cat > tmp.json
 
 mv tmp.json $DIR/package.json
+
+echo "HELLO $VERSION"
 
 if [[ -n $(git status -s) ]]; then
     echo "PUSH TO GITHUB $VERSION"
