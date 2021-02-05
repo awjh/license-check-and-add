@@ -26,7 +26,7 @@ mv tmp.json $REPODIR/package.json
 echo "HELLO $VERSION"
 
 if [[ -n $(git status -s) ]]; then
-    echo "PUSH TO GITHUB $VERSION"
+    git status
     # git add --all
     # git commit -s -m "Release required version bump $VERSION [skip ci]"
     # git push repo master

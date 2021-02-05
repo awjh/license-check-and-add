@@ -25,6 +25,6 @@ steps:
     displayName: Run integration tests
   - script: ./.azure-pipelines/scripts/version-bump-to-release.sh
     env:
-        TAG: 4.0.0
+        TAG: v4.0.0
         GHTOKEN: $(GHTOKEN)
     displayName: Check package.json version matches release
