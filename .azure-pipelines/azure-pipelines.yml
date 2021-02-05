@@ -1,0 +1,25 @@
+name: $(SourceBranchName)-$(Date:yyyyMMdd)$(Rev:.rrr)
+trigger:
+  batch: false
+  tags:
+    include:
+      - '*'
+  branches:
+    include:
+      - 'v4-dev'
+  
+pool:
+  vmImage: 'ubuntu-18.04'
+
+steps:
+  - checkout: self
+    clean: true
+    fetchDepth: 1
+  - script: npm install
+    displayName: Install node modules
+  - script: npm lint
+    displayName: Lint files
+  - script: npm run unit
+    displayName: Run unit tests
+  - script: npm run integration
+    displayName: Run integration tests
