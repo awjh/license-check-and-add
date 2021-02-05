@@ -11,7 +11,7 @@ export enum TrailingWhitespaceMode {
 
 export interface IRegexConfig {
     identifier: string;
-    replacement?: string;
+    replacements?: string[];
 }
 
 export interface IInputConfig {
@@ -39,7 +39,7 @@ export interface IConfig {
 const REQUIRED_FIELDS: string[] = ['license'];
 
 export class ConfigParser {
-    public static parse (filePath: string, mode: ManagementMode, regexReplacement?: string): IConfig {
+    public static parse (filePath: string, mode: ManagementMode, regexReplacements?: string[]): IConfig {
         const fileConfig = fs.readJSONSync(filePath) as IInputConfig;
 
         for (const REQUIRED_FIELD of REQUIRED_FIELDS) {
@@ -79,10 +79,10 @@ export class ConfigParser {
         if (fileConfig.regexIdentifier) {
             config.regex = {identifier: fileConfig.regexIdentifier};
 
-            if (!regexReplacement && mode === ManagementMode.INSERT) {
-                throw new Error('Must supply regexReplacement option when using regexIdentifier in config when in INSERT mode');
-            } else if (regexReplacement) {
-                config.regex.replacement = regexReplacement;
+            if (!regexReplacements && mode === ManagementMode.INSERT) {
+                throw new Error('Must supply regexReplacements option when using regexIdentifier in config when in INSERT mode');
+            } else if (regexReplacements) {
+                config.regex.replacements = regexReplacements;
             }
         }
 

@@ -36,6 +36,12 @@ describe ('#Regex', () => {
     });
 
     describe ('Insert licenses', () => {
+        it ('should error when the regex does not match the value to be inserted', () => {
+            expect(() => {
+                childProcess.execSync(`node ${bin} add -f ${config} -r bellO02`).toString();
+            }).to.throw(/Replacement value bellO02 does not match regex it is to replace: \[a\-z\]\{4\}\[0\-9\]\{3\}/);
+        });
+
         it ('should insert the license into those without', () => {
             const goalFilesDir = path.resolve(__dirname, 'goal-files/insert');
 

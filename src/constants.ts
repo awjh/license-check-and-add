@@ -4,7 +4,7 @@ import { IFormatCollection, ILicenseFormat } from './lib/license-formatter';
 
 export type Arguments = YargsArguments & {
     'config-file': string;
-    'regex-replacement': string;
+    'regex-replacements': string[];
     done?: Promise<any>;
 };
 
@@ -18,7 +18,7 @@ export const OPTIONS: {[s: string]: Options} = {
 };
 
 export const CONFIG_OPTION = 'config-file';
-export const REGEX_OPTION = 'regex-replacement';
+export const REGEX_OPTION = 'regex-replacements';
 
 // tslint:disable: object-literal-sort-keys
 export const DEFAULT_FORMAT: ILicenseFormat = {

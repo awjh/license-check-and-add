@@ -3,7 +3,7 @@ import * as globby from 'globby';
 import * as path from 'path';
 
 export const DEFAULT_IGNORES = [
-    '**/node_modules', '**/dist',
+    '**/node_modules', '**/dist', '**/.git',
     '**/LICENSE*', '**/*.png', '**/*.jpg', '**/*.jpeg', '**/*.gif', '**/*.tif', '**/*.ico', '**/*.json', '**/*.zip', '**/*.tgz',
 ];
 
