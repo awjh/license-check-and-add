@@ -27,4 +27,6 @@ steps:
     env:
         TAG: v4.0.0-alpha
         GHTOKEN: $(GHTOKEN)
-    displayName: Check package.json version matches release
+        GHUSER: $(GHUSER)
+        GHEMAIL: $(GHEMAIL)
+    displayName: Check package.json version matches release and bump

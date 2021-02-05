@@ -25,6 +25,6 @@ mv tmp.json $REPODIR/package.json
 
 if [[ -n $(git status -s) ]]; then
     git add --all
-    git commit -s -m "Release required version bump $VERSION [skip ci]"
-    git push repo  v4-dev
+    git -c user.name=${GHUSER} -c user.email=${GHEMAIL} commit -s -m "Release required version bump $VERSION [skip ci]"
+    git push repo v4-dev
 fi
