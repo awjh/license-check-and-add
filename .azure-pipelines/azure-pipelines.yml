@@ -17,7 +17,7 @@ steps:
     fetchDepth: 1
   - script: npm install
     displayName: Install node modules
-  - script: npm lint
+  - script: npm run lint
     displayName: Lint files
   - script: npm run unit
     displayName: Run unit tests
