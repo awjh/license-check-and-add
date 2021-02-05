@@ -10,6 +10,8 @@ BASEDIR=$(pwd)
 
 cd ../.. # move to where package.json is
 
+REPODIR=$(pwd)
+
 git remote add repo https://${GHTOKEN}@github.com/awjh/license-check-and-add # add repo with token so we have push permissions
 git fetch repo
 
@@ -17,9 +19,9 @@ git checkout v4-dev
 
 VERSION=$(echo $TAG | grep -Eo '([0-9]+\.){2}[0-9]+')
 
-jq -r ".version=\"$VERSION\"" "$BASEDIR/package.json" | cat > tmp.json
+jq -r ".version=\"$VERSION\"" "$REPODIR/package.json" | cat > tmp.json
 
-mv tmp.json $BASEDIR/package.json
+mv tmp.json $REPODIR/package.json
 
 echo "HELLO $VERSION"
 
