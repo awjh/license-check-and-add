@@ -23,11 +23,8 @@ jq -r ".version=\"$VERSION\"" "$REPODIR/package.json" | cat > tmp.json
 
 mv tmp.json $REPODIR/package.json
 
-echo "HELLO $VERSION"
-
 if [[ -n $(git status -s) ]]; then
-    git status
-    # git add --all
-    # git commit -s -m "Release required version bump $VERSION [skip ci]"
-    # git push repo master
+    git add --all
+    git commit -s -m "Release required version bump $VERSION [skip ci]"
+    git push repo  v4-dev
 fi
