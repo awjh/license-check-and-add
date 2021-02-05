@@ -111,9 +111,32 @@ export class LicenseManager {
         let newText = '';
 
         if (regex) {
+            let identifierChoice = 0;
+
             formattedLicense = formattedLicense.split(/\r?\n/).map((line) => {
                 return line.split(regex.identifier).map((el, idx) => {
-                    return idx % 2 === 0 ? el : regex.replacement;
+                    if (idx % 2 === 0) {
+                        return el;
+                    } else {
+                        let replacement = regex.replacements[0];
+
+                        if (regex.replacements.length > 1) {
+                            if (identifierChoice === regex.replacements.length) {
+                                throw new Error(
+                                    `Too few replacement values passed. Found at least ${identifierChoice + 1} regex values. ` +
+                                    `Only have ${regex.replacements.length} replacements`,
+                                );
+                            }
+
+                            replacement = regex.replacements[identifierChoice++];
+                        }
+
+                        if (!replacement.match(el)) {
+                            throw new Error(`Replacement value ${replacement} does not match regex it is to replace: ${el}`);
+                        }
+
+                        return replacement;
+                    }
                 }).join('');
             }).join(EOL);
         }

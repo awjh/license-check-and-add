@@ -401,17 +401,98 @@ describe ('#LicenseManager', () => {
             );
         });
 
-        it ('should write license to start of file replacing the regex', () => {
-            const replacementRegex = Object.assign(mockRegex, {replacement: 'replacement'});
+        it ('should error when replacement value passed does not match regex', () => {
+            const replacementRegex = Object.assign(mockRegex, {replacements: ['license', '123']});
 
             licenseManager = new LicenseManager(
                 ['some.txt', '.dotfile'], 'some license text', mockFormats, DEFAULT_FORMAT,
                 TrailingWhitespaceMode.DEFAULT, ManagementMode.CHECK, 'some output path', replacementRegex,
             );
 
-            (licenseManager as any).insertLicense('some file contents', 'some ##l{1}icense##', 'some file', replacementRegex);
+            expect(() => {
+                (licenseManager as any).insertLicense(
+                    'some file contents', 'some ##l{1}icense## ##[1-9]{4}##', 'some file', replacementRegex,
+                );
+            }).to.throw('Replacement value 123 does not match regex it is to replace: [1-9]{4}');
+        });
 
-            expect(fsWriteFileStub).to.have.been.calledWithExactly('some file', 'some replacement' + EOL + 'some file contents');
+        it ('should error when single replacement value passed does not match regex but matches another', () => {
+            const replacementRegex = Object.assign(mockRegex, {replacements: ['license']});
+
+            licenseManager = new LicenseManager(
+                ['some.txt', '.dotfile'], 'some license text', mockFormats, DEFAULT_FORMAT,
+                TrailingWhitespaceMode.DEFAULT, ManagementMode.CHECK, 'some output path', replacementRegex,
+            );
+
+            expect(() => {
+                (licenseManager as any).insertLicense(
+                    'some file contents', 'some ##l{1}icense## ##[1-9]{4}##', 'some file', replacementRegex,
+                );
+            }).to.throw('Replacement value license does not match regex it is to replace: [1-9]{4}');
+        });
+
+        it ('should error when multiple replacement values are passed but there are more regex values', () => {
+            const replacementRegex = Object.assign(mockRegex, {replacements: ['license', '123']});
+
+            licenseManager = new LicenseManager(
+                ['some.txt', '.dotfile'], 'some license text', mockFormats, DEFAULT_FORMAT,
+                TrailingWhitespaceMode.DEFAULT, ManagementMode.CHECK, 'some output path', replacementRegex,
+            );
+
+            expect(() => {
+                (licenseManager as any).insertLicense(
+                    'some file contents', 'some ##l{1}icense## ##[1-9]{3}##\n##[a-z]{4}##', 'some file', replacementRegex,
+                );
+            }).to.throw(
+                `Too few replacement values passed. Found at least 3 regex values. Only have 2 replacements`,
+            );
+        });
+
+        it ('should write license to start of file replacing the regex when multiple supplied', () => {
+            const replacementRegex = Object.assign(mockRegex, {replacements: ['license', '123']});
+
+            licenseManager = new LicenseManager(
+                ['some.txt', '.dotfile'], 'some license text', mockFormats, DEFAULT_FORMAT,
+                TrailingWhitespaceMode.DEFAULT, ManagementMode.CHECK, 'some output path', replacementRegex,
+            );
+
+            (licenseManager as any).insertLicense('some file contents', 'some ##l{1}icense## ##[1-9]{3}##', 'some file', replacementRegex);
+
+            expect(fsWriteFileStub).to.have.been.calledWithExactly(
+                'some file', 'some license 123' + EOL + 'some file contents',
+            );
+        });
+
+        it ('should write license to start of file replacing the regex when only one supplied', () => {
+            const replacementRegex = Object.assign(mockRegex, {replacements: ['replacement']});
+
+            licenseManager = new LicenseManager(
+                ['some.txt', '.dotfile'], 'some license text', mockFormats, DEFAULT_FORMAT,
+                TrailingWhitespaceMode.DEFAULT, ManagementMode.CHECK, 'some output path', replacementRegex,
+            );
+
+            (licenseManager as any).insertLicense('some file contents', 'some ##[a-z]{11}## ##[a-z]{11}##', 'some file', replacementRegex);
+
+            expect(fsWriteFileStub).to.have.been.calledWithExactly(
+                'some file', 'some replacement replacement' + EOL + 'some file contents',
+            );
+        });
+
+        it ('should write license to start of file replacing the regex when multiple supplied over new lines', () => {
+            const replacementRegex = Object.assign(mockRegex, {replacements: ['license', 'andy', 'made']});
+
+            licenseManager = new LicenseManager(
+                ['some.txt', '.dotfile'], 'some license text', mockFormats, DEFAULT_FORMAT,
+                TrailingWhitespaceMode.DEFAULT, ManagementMode.CHECK, 'some output path', replacementRegex,
+            );
+
+            (licenseManager as any).insertLicense(
+                'some file contents', 'some ##l{1}icense## ##[a-z]{4}##\n##.*##', 'some file', replacementRegex,
+            );
+
+            expect(fsWriteFileStub).to.have.been.calledWithExactly(
+                'some file', 'some license andy\nmade' + EOL + 'some file contents',
+            );
         });
     });
 

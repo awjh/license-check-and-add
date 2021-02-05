@@ -25,7 +25,11 @@
     "header",
     "add",
     "insert",
-    "remove"
+    "remove",
+    "regex",
+    "pattern",
+    "match",
+    "copyright"
   ],
   "author": "awjh",
   "license": "Apache-2.0",

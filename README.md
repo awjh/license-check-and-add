@@ -1,6 +1,6 @@
 # License check and add
 
-license-check-and-add is an npm module to check whether a specified piece of text is present in specific formats for a set of files. It also can insert the formatted text into files that do not contain it or remove it from those that do.
+license-check-and-add is an npm module to check whether a specified piece of text is present in specific formats for a set of files. It also can insert the formatted text into files that do not contain it or remove it from those that do. It supports pattern matching within a license to allow for more flexibility in areas such as copyright notices.
 
 ## Install
 ``` bash
@@ -10,7 +10,7 @@ npm install -D license-check-and-add
 ## Usage
 license-check-and-add is run using the following command either in your terminal if installed globally or as an npm script if installed locally to a module.
 
-```
+``` bash
 license-check-and-add [check|add|remove] -f [path/to/config.json]
 ```
 
@@ -32,8 +32,22 @@ and files with the extensations:
 
 You can turn off this default ignoring in the config file.
 
+### Additional command options
+#### -r/--regex-replacements
+This option is only for use with the add sub-command. It is for use when combined with the #regexIdentifier option of the configuration and with licenses that contain one or more pattern within them. It takes an array of values which should match the number of patterns within the license. If there are more patterns within the license than replacements specified hunder this option an error will occur. It is possible to supply only one option when used with multiple patterns and this option will be used for all. Note that replacements passed must satisfy the pattern they are replacing.
+
+##### Example:
+Given the license text `Copyright (c) ##[0-9]{4}## ##[a-z]+##` and a configuation with the field `"regexIdentifier": "##"`.
+
+Running the command:
+``` bash
+license-check-and-add add -f [path/to/config.json] -r 2021 awjh
+```
+
+Would result in the license `Copyright (c) 2021 awjh` being inserted at the top of your selected files.
+
 ## Configuring
-Configuration is expected in a JSON format. You can find a schema [here](https://github.com/awjh/license-check-and-add/blob/master/config-schema.json). An example config can be found in our [tests](https://github.com/awjh/license-check-and-add/blob/master/test/license-check-and-add-config.json)
+Configuration is expected in a JSON format. You can find a schema [here](https://github.com/awjh/license-check-and-add/blob/master/config-schema.json). An example config can be found in our [tests](https://github.com/awjh/license-check-and-add/blob/master/test/non-regex/license-check-and-add-config.json)
 
 ### Required fields
 
@@ -50,6 +64,11 @@ Either the path to an ignore style file (e.g. gitignore) or an array of globby s
 
 #### trailingWhitespace
 By default this is set such that whitespace at the end of lines in a license is ignored. This means in `add` mode should your license contain a blank line and your formatting for that license contain a space after a prepend (for example ` * `) then the blank line would have trailing whitespace. It also means when searching for licenses (such as in `check` mode) a file will match even if its license lines finish in whitespace when the formatted license lines do not. Setting the value of this property to be `TRIM` will enforce both when checking and adding the license that the file's license contains no whitespace at the end of lines. This can be useful for ensuring that when the license is inserted it meets linting requirements.
+
+#### regexIdentifier
+It is possible with this tool to supply a license which contains regex pattern matching so that it can match multiple formats of the same license. The string here is the string that will be on either side of the pattern in your license so that it can be identified against regex characters that are not intended for pattern mtaching such as full stops. For example if you had a license with the line `Copyright (c) ##[0-9]{4}##` then the value for this configuration would be `##` as that bookends the pattern. Note that patterns must be entirely contained within one line and must be bookended. You may have multiple patterns in one line. You can find an example of this in the regex folder of our tests:
+- Config -> https://github.com/awjh/license-check-and-add/blob/v4-dev/test/regex/license-check-and-add-config.json
+- License -> https://github.com/awjh/license-check-and-add/blob/master/test/regex/original-files/LICENSE
 
 #### output
 File location where list of relevent files should be sent to.

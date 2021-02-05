@@ -204,7 +204,7 @@ describe ('#ConfigParser', () => {
     it ('should set regex replacement value when identifier used', () => {
         mockConfig.regexIdentifier = '#';
 
-        const config = ConfigParser.parse('some/file/path', ManagementMode.INSERT, 'replacement');
+        const config = ConfigParser.parse('some/file/path', ManagementMode.INSERT, ['replacement']);
 
         expect(config).deep.equal({
             defaultFormat: DEFAULT_FORMAT,
@@ -214,7 +214,7 @@ describe ('#ConfigParser', () => {
             licenseFormats: {},
             regex: {
                 identifier: '#',
-                replacement: 'replacement',
+                replacements: ['replacement'],
             },
             trailingWhitespace: TrailingWhitespaceMode.DEFAULT,
         } as IConfig);
@@ -227,6 +227,6 @@ describe ('#ConfigParser', () => {
 
         expect(() => {
             ConfigParser.parse('some/file/path', ManagementMode.INSERT);
-        }).to.throw('Must supply regexReplacement option when using regexIdentifier in config when in INSERT mode');
+        }).to.throw('Must supply regexReplacements option when using regexIdentifier in config when in INSERT mode');
     });
 });
