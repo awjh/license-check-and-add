@@ -16,6 +16,8 @@ steps:
     clean: true
     fetchDepth: 1
   - script: npm install
+    env:
+        NPMTOKEN: $(NPMTOKEN)
     displayName: Install node modules
   - script: npm run lint
     displayName: Lint files
