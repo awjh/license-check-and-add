@@ -16,20 +16,12 @@ steps:
     clean: true
     fetchDepth: 1
   - script: npm install
-    env:
-        NPMTOKEN: $(NPMTOKEN)
     displayName: Install node modules
   - script: npm run lint
-    env:
-        NPMTOKEN: $(NPMTOKEN)
     displayName: Lint files
   - script: npm run unit
-    env:
-        NPMTOKEN: $(NPMTOKEN)
     displayName: Run unit tests
   - script: npm run integration
-    env:
-        NPMTOKEN: $(NPMTOKEN)
     displayName: Run integration tests
   - script: ./.azure-pipelines/scripts/version-bump-to-release.sh
     condition: and(contains(variables['build.sourceBranch'], 'refs/tags'), succeeded())
@@ -39,7 +31,7 @@ steps:
         GHUSER: $(GHUSER)
         GHEMAIL: $(GHEMAIL)
     displayName: Check package.json version matches release and bump
-  - script: npm publish
+  - script: ./.azure-pipelines/scripts/publish-to-npm.sh
     condition: and(contains(variables['build.sourceBranch'], 'refs/tags'), succeeded())
     env:
         NPMTOKEN: $(NPMTOKEN)
@@ -49,4 +41,4 @@ steps:
     env:
         GHUSER: $(GHUSER)
         GHEMAIL: $(GHEMAIL)
-    displayName: Check package.json version matches release and bump
+    displayName: Bump version to patch release
