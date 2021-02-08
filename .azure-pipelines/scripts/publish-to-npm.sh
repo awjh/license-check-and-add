@@ -11,8 +11,9 @@ BASEDIR=$(pwd)
 cd ../.. # move to where package.json is
 
 echo '[Action] adding token to npmrc'
-echo '//registry.npmjs.org/:_authToken=${NPMTOKEN}' > .npmrc
+echo '//registry.npmjs.org/:_authToken=$(NPMTOKEN)' > .npmrc
 
+echo $NPMTOKEN
 cat .npmrc
 
 # npm publish
