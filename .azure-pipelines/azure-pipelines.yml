@@ -32,7 +32,7 @@ steps:
         GHEMAIL: $(GHEMAIL)
     displayName: Check package.json version matches release and bump
   - script: ./.azure-pipelines/scripts/publish-to-npm.sh
-    # condition: and(contains(variables['build.sourceBranch'], 'refs/tags'), succeeded())
+    condition: and(contains(variables['build.sourceBranch'], 'refs/tags'), succeeded())
     env:
         TAG: $(Build.SourceBranchName)
         NPMTOKEN: $(NPMTOKEN)
