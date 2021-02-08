@@ -34,7 +34,7 @@ You can turn off this default ignoring in the config file.
 
 ### Additional command options
 #### -r/--regex-replacements
-This option is only for use with the add sub-command. It is for use when combined with the #regexIdentifier option of the configuration and with licenses that contain one or more pattern within them. It takes an array of values which should match the number of patterns within the license. If there are more patterns within the license than replacements specified hunder this option an error will occur. It is possible to supply only one option when used with multiple patterns and this option will be used for all. Note that replacements passed must satisfy the pattern they are replacing.
+This option is only for use with the add sub-command. It is for use when combined with the [regexIdentifier](#regexIdentifier) option of the configuration and with licenses that contain one or more pattern within them. It takes an array of values which should match the number of patterns within the license. If there are more patterns within the license than replacements specified hunder this option an error will occur. It is possible to supply only one option when used with multiple patterns and this option will be used for all. Note that replacements passed must satisfy the pattern they are replacing.
 
 ##### Example:
 Given the license text `Copyright (c) ##[0-9]{4}## ##[a-z]+##` and a configuation with the field `"regexIdentifier": "##"`.
