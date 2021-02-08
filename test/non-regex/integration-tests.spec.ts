@@ -30,7 +30,7 @@ describe ('#Non Regex', () => {
         it ('should check licenses', () => {
             expect(() => {
                 childProcess.execSync(`node ${bin} check -f ${config}`);
-            }).to.throw(/4 file\(s\) did not have the license/);
+            }).to.throw(/5 file\(s\) did not have the license/);
         });
     });
 
@@ -42,7 +42,7 @@ describe ('#Non Regex', () => {
 
             // tslint:disable-next-line: no-unused-expression
             expect(directoriesMatch(tmp, goalFilesDir)).to.be.true;
-            expect(stdout).to.match(/Inserted license into 4 file\(s\)/);
+            expect(stdout).to.match(/Inserted license into 5 file\(s\)/);
         });
     });
 
@@ -54,7 +54,7 @@ describe ('#Non Regex', () => {
 
             // tslint:disable-next-line: no-unused-expression
             expect(directoriesMatch(tmp, goalFilesDir)).to.be.true;
-            expect(stdout).to.match(/Removed license from 5 file\(s\)/);
+            expect(stdout).to.match(/Removed license from 6 file\(s\)/);
         });
     });
 });

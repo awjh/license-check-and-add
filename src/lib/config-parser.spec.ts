@@ -91,15 +91,16 @@ describe ('#ConfigParser', () => {
         expect(fsReadFileStub).to.have.been.calledOnceWithExactly(path.resolve(process.cwd(), 'LICENSE.txt'));
     });
 
-    it ('should handle when ignore is a file', () => {
-        mockConfig.ignore = 'some/ignore/file';
+    it ('should handle when ignoreFile is passed', () => {
+        mockConfig.ignoreFile = 'some/ignore/file';
 
         const config = ConfigParser.parse('some/file/path', ManagementMode.CHECK);
 
         expect(config).deep.equal({
             defaultFormat: DEFAULT_FORMAT,
-            ignore: 'some/ignore/file',
+            ignore: [],
             ignoreDefaultIgnores: false,
+            ignoreFile: 'some/ignore/file',
             license: 'some license',
             licenseFormats: {},
             trailingWhitespace: TrailingWhitespaceMode.DEFAULT,

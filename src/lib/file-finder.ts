@@ -8,15 +8,13 @@ export const DEFAULT_IGNORES = [
 ];
 
 export class FileFinder {
-    public static getPaths (ignore: string | string[], ignoreDefaultIgnores: boolean): string[] {
+    public static getPaths (ignore: string[], ignoreDefaultIgnores: boolean, ignoreFile?: string): string[] {
         let includes = ['**/*'];
-        let ignores = [];
+        let ignores = ignore;
 
-        if (!Array.isArray(ignore)) {
+        if (ignoreFile) {
             console.debug('Using ignore file');
-            includes = includes.concat(gitignoreToGlob(path.resolve(process.cwd(), ignore as string)), '!' + ignore);
-        } else {
-            ignores = ignore;
+            includes = includes.concat(gitignoreToGlob(path.resolve(process.cwd(), ignoreFile)), '!' + ignoreFile);
         }
 
         if (!ignoreDefaultIgnores) {

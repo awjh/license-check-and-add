@@ -9,7 +9,7 @@
                 "prepend": " * "
             }
         },
-        "dotfile": {
+        "dotfile|^Dockerfile": {
             "eachLine": {
                 "prepend": "# "
             }

@@ -26,6 +26,7 @@ describe ('#CommandUtils', () => {
         defaultFormat: DEFAULT_FORMAT,
         ignore: ['some', 'stuff', 'to', 'ignore'],
         ignoreDefaultIgnores: true,
+        ignoreFile: 'some/ignore/path',
         license: 'some license',
         licenseFormats: {},
         trailingWhitespace: TrailingWhitespaceMode.DEFAULT,
@@ -89,7 +90,9 @@ describe ('#CommandUtils', () => {
             MockUtils.manageLicense(mockArgs, ManagementMode.CHECK);
 
             expect(configParserStub).to.have.been.calledOnceWithExactly(expectedConfigPath, ManagementMode.CHECK, 'some regex option');
-            expect(getPathsStub).to.have.been.calledOnceWithExactly(mockConfig.ignore, mockConfig.ignoreDefaultIgnores);
+            expect(getPathsStub).to.have.been.calledOnceWithExactly(
+                mockConfig.ignore, mockConfig.ignoreDefaultIgnores, mockConfig.ignoreFile,
+            );
             expect(LicenseManagerStub).to.have.been.calledOnceWithExactly(
                 ['some paths'], mockConfig.license, mockConfig.licenseFormats, mockConfig.defaultFormat,
                 mockConfig.trailingWhitespace, ManagementMode.CHECK, mockConfig.output, mockConfig.regex,

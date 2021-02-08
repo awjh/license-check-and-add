@@ -1,5 +1,7 @@
 {
     "license": "LICENSE",
+    "ignore": ["ignore_me_via_ignore_array.sh"],
+    "ignoreFile": ".ignorefile",
     "licenseFormats": {
         "js": {
             "prepend": "/*",

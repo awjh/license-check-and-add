@@ -17,7 +17,8 @@ export interface IRegexConfig {
 export interface IInputConfig {
     defaultFormat?: ILicenseFormat;
     ignoreDefaultIgnores?: boolean;
-    ignore?: string | string[];
+    ignore?: string[];
+    ignoreFile?: string;
     license: string;
     licenseFormats?: IFormatCollection;
     output?: string; // could make it a command line option e.g. -o formats it nicely and then they can pipe it out to whatever
@@ -28,7 +29,8 @@ export interface IInputConfig {
 export interface IConfig {
     defaultFormat: ILicenseFormat;
     ignoreDefaultIgnores: boolean;
-    ignore: string | string[];
+    ignore: string[];
+    ignoreFile?: string;
     license: string;
     licenseFormats: IFormatCollection;
     output?: string;
@@ -62,6 +64,10 @@ export class ConfigParser {
             config.ignore = [];
         } else {
             config.ignore = fileConfig.ignore;
+        }
+
+        if (fileConfig.ignoreFile) {
+            config.ignoreFile = fileConfig.ignoreFile;
         }
 
         if (!fileConfig.defaultFormat) {

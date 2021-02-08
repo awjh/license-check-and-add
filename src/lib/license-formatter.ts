@@ -83,7 +83,13 @@ export class LicenseFormatter {
             const splitKey = key.split('|');
 
             splitKey.forEach((fileType) => {
-                separated['.' + fileType] = formats[key];
+                if (!fileType.startsWith('^')) {
+                    fileType = '.' + fileType;
+                } else {
+                    fileType = fileType.substring(1);
+                }
+
+                separated[fileType] = formats[key];
             });
         });
 
