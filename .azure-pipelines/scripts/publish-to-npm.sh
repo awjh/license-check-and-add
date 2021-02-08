@@ -13,6 +13,8 @@ cd ../.. # move to where package.json is
 echo '[Action] adding token to npmrc'
 echo '//registry.npmjs.org/:_authToken=$NPMTOKEN' > .npmrc
 
-npm publish
+cat .npmrc
 
-rm .npmrc
+# npm publish
+
+# rm .npmrc
