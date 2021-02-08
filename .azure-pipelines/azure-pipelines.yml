@@ -16,12 +16,20 @@ steps:
     clean: true
     fetchDepth: 1
   - script: npm install
+    env:
+        NPMTOKEN: $(NPMTOKEN)
     displayName: Install node modules
   - script: npm run lint
+    env:
+        NPMTOKEN: $(NPMTOKEN)
     displayName: Lint files
   - script: npm run unit
+    env:
+        NPMTOKEN: $(NPMTOKEN)
     displayName: Run unit tests
   - script: npm run integration
+    env:
+        NPMTOKEN: $(NPMTOKEN)
     displayName: Run integration tests
   - script: ./.azure-pipelines/scripts/version-bump-to-release.sh
     condition: and(contains(variables['build.sourceBranch'], 'refs/tags'), succeeded())
@@ -31,25 +39,14 @@ steps:
         GHUSER: $(GHUSER)
         GHEMAIL: $(GHEMAIL)
     displayName: Check package.json version matches release and bump
-  - script: npm pack
+  - script: npm publish
     condition: and(contains(variables['build.sourceBranch'], 'refs/tags'), succeeded())
-    displayName: npm pack
-  - task: CopyFiles@2
-    inputs:
-        contents: '*.tgz'
-        targetFolder: $(Build.ArtifactStagingDirectory)
-    condition: and(contains(variables['build.sourceBranch'], 'refs/tags'), succeeded())
-    displayName: 'Copy archives to artifacts staging directory'
-  - task: PublishBuildArtifacts@1
-    inputs:
-        path: $(Build.ArtifactStagingDirectory)
-        artifact: package
-    condition: and(contains(variables['build.sourceBranch'], 'refs/tags'), succeeded())
-    displayName: 'Publish artifacts'
+    env:
+        NPMTOKEN: $(NPMTOKEN)
+    displayName: Publish to NPM
   - script: ./.azure-pipelines/scripts/version-bump-post-release.sh
     condition: and(contains(variables['build.sourceBranch'], 'refs/tags'), succeeded())
     env:
-        GHTOKEN: $(GHTOKEN)
         GHUSER: $(GHUSER)
         GHEMAIL: $(GHEMAIL)
-    displayName: Bump version post release
+    displayName: Check package.json version matches release and bump
