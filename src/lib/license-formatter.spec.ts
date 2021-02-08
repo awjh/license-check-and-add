@@ -100,7 +100,7 @@ describe ('#LicenseFormatter', () => {
             separateStub = sandbox.stub(LicenseFormatter.prototype as any, 'separateFileTypesInFormat').onFirstCall().returns(mockFormats);
         });
 
-        const mockLicenseText = fs.readFileSync(path.resolve(__dirname, '../../test/original-files/LICENSE'), 'utf-8');
+        const mockLicenseText = fs.readFileSync(path.resolve(__dirname, '../../test/non-regex/original-files/LICENSE'), 'utf-8');
 
         it ('should use an already formatted license file when one specified', () => {
             mockery.enable({
@@ -245,7 +245,7 @@ lines`);
     describe ('separateFileTypesInFormat', () => {
         const lf: LicenseFormatter = new LicenseFormatter(mockDefaultFormat, TrailingWhitespaceMode.DEFAULT);
 
-        it ('should split keys on pipe synbole', () => {
+        it ('should split keys on pipe symbol and not include a dot for those starting with ^', () => {
             const prependVal: ILicenseFormat = {
                 prepend: 'this',
             };
@@ -255,17 +255,17 @@ lines`);
             };
 
             const obj: IFormatCollection = {
-                'some|delimitted': prependVal,
+                'some|^delimitted': prependVal,
                 'useful|keys': appendVal,
             };
 
             const splitObj = (lf as any).separateFileTypesInFormat(obj);
 
             expect(splitObj).to.deep.equal({
-                '.delimitted': prependVal,
                 '.keys': appendVal,
                 '.some': prependVal,
                 '.useful': appendVal,
+                delimitted: prependVal,
             });
         });
     });

@@ -1,0 +1,46 @@
+name: $(SourceBranchName)-$(Date:yyyyMMdd)$(Rev:.rrr)
+trigger:
+  batch: false
+  tags:
+    include:
+      - '*'
+  branches:
+    include:
+      - 'master'
+  
+pool:
+  vmImage: 'ubuntu-18.04'
+
+steps:
+  - checkout: self
+    clean: true
+    fetchDepth: 1
+  - script: npm install
+    displayName: Install node modules
+  - script: npm run lint
+    displayName: Lint files
+  - script: npm run unit
+    displayName: Run unit tests
+  - script: npm run integration
+    displayName: Run integration tests
+  - script: ./.azure-pipelines/scripts/version-bump-to-release.sh
+    condition: and(contains(variables['build.sourceBranch'], 'refs/tags'), succeeded())
+    env:
+        TAG: $(Build.SourceBranchName)
+        GHTOKEN: $(GHTOKEN)
+        GHUSER: $(GHUSER)
+        GHEMAIL: $(GHEMAIL)
+    displayName: Check package.json version matches release and bump
+  - script: ./.azure-pipelines/scripts/publish-to-npm.sh
+    condition: and(contains(variables['build.sourceBranch'], 'refs/tags'), succeeded())
+    env:
+        TAG: $(Build.SourceBranchName)
+        NPMTOKEN: $(NPMTOKEN)
+    displayName: Publish to NPM
+  - script: ./.azure-pipelines/scripts/version-bump-post-release.sh
+    condition: and(contains(variables['build.sourceBranch'], 'refs/tags'), succeeded())
+    env:
+        GHTOKEN: $(GHTOKEN)
+        GHUSER: $(GHUSER)
+        GHEMAIL: $(GHEMAIL)
+    displayName: Bump version post release

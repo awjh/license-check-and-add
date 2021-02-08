@@ -2,21 +2,23 @@ import * as chai from 'chai';
 import * as childProcess from 'child_process';
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import { directoriesMatch } from '../utils';
 
 const expect = chai.expect;
 
-describe ('#Scenario', () => {
+describe ('#Non Identified Regex', () => {
 
-    const packageJson = fs.readJSONSync(path.resolve(__dirname, '../package.json'));
+    const packageJson = fs.readJSONSync(path.resolve(__dirname, '../../package.json'));
 
     const pwd = process.cwd();
 
     const tmp = '/tmp/license-check-and-add';
-    const bin = path.resolve(__dirname, '..', packageJson.bin['license-check-and-add']);
+    const bin = path.resolve(__dirname, '../..', packageJson.bin['license-check-and-add']);
     const config = path.resolve(__dirname, 'license-check-and-add-config.json');
 
     before (() => {
         fs.copySync(path.resolve(__dirname, 'original-files'), tmp);
+        fs.copyFileSync(path.resolve(__dirname, '.ignorefile'), path.resolve(tmp, '.ignorefile'));
         process.chdir(tmp);
     });
 
@@ -29,7 +31,7 @@ describe ('#Scenario', () => {
         it ('should check licenses', () => {
             expect(() => {
                 childProcess.execSync(`node ${bin} check -f ${config}`);
-            }).to.throw(/4 file\(s\) did not have the license/);
+            }).to.throw(/1 file\(s\) did not have the license/);
         });
     });
 
@@ -41,7 +43,7 @@ describe ('#Scenario', () => {
 
             // tslint:disable-next-line: no-unused-expression
             expect(directoriesMatch(tmp, goalFilesDir)).to.be.true;
-            expect(stdout).to.match(/Inserted license into 4 file\(s\)/);
+            expect(stdout).to.match(/Inserted license into 1 file\(s\)/);
         });
     });
 
@@ -53,20 +55,7 @@ describe ('#Scenario', () => {
 
             // tslint:disable-next-line: no-unused-expression
             expect(directoriesMatch(tmp, goalFilesDir)).to.be.true;
-            expect(stdout).to.match(/Removed license from 5 file\(s\)/);
+            expect(stdout).to.match(/Removed license from 2 file\(s\)/);
         });
     });
 });
-
-function directoriesMatch (original, goal): boolean {
-    return fs.readdirSync(original).every((fileOrDir) => {
-        const fullPath = path.resolve(original, fileOrDir);
-        const goalPath = path.resolve(goal, fileOrDir);
-
-        if (fs.lstatSync(fullPath).isDirectory()) {
-            return directoriesMatch(fullPath, goalPath);
-        }
-
-        return fs.readFileSync(fullPath).toString() === fs.readFileSync(goalPath).toString();
-    });
-}

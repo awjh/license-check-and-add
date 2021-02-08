@@ -1,17 +1,13 @@
 {
-    "ignore": ["**/!(text_file_to_not_ignore).txt", "sub_directory/sub_sub_directory_to_ignore"],
     "license": "LICENSE",
+    "ignore": ["ignore_me_via_ignore_array.sh"],
+    "ignoreFile": ".ignorefile",
     "licenseFormats": {
         "js": {
             "prepend": "/*",
             "append": " */",
             "eachLine": {
                 "prepend": " * "
-            }
-        },
-        "dotfile": {
-            "eachLine": {
-                "prepend": "# "
             }
         }
     },

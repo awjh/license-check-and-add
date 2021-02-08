@@ -4,7 +4,8 @@ import * as path from 'path';
 import * as sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { DEFAULT_FORMAT } from '../constants';
-import { IConfig, IInputConfig, TrailingWhitespaceMode } from './config-parser';
+import { ConfigParser as ConfigParserDef, IConfig, IInputConfig, TrailingWhitespaceMode } from './config-parser';
+import { ManagementMode } from './license-manager';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -14,10 +15,8 @@ describe ('#ConfigParser', () => {
     let sandbox: sinon.SinonSandbox;
     let fsReadJSONStub: sinon.SinonStub;
     let fsReadFileStub: sinon.SinonStub;
-
+    let ConfigParser: typeof ConfigParserDef;
     let mockConfig: IInputConfig;
-
-    let configParser;
 
     before (() => {
         mockery.enable({
@@ -39,7 +38,7 @@ describe ('#ConfigParser', () => {
         mockery.registerMock('fs-extra', { readJSONSync: fsReadJSONStub, readFileSync: fsReadFileStub });
 
         delete require.cache[require.resolve('./config-parser')];
-        configParser = require('./config-parser').configParser;
+        ConfigParser = require('./config-parser').ConfigParser;
     });
 
     afterEach(() => {
@@ -55,13 +54,13 @@ describe ('#ConfigParser', () => {
         delete mockConfig.license;
 
         expect(() => {
-            configParser('some/file/path');
+            ConfigParser.parse('some/file/path', ManagementMode.CHECK);
         }).to.throw('Missing required field in config: license');
         expect(fsReadJSONStub).to.have.been.calledOnceWithExactly('some/file/path');
     });
 
     it ('should handle when minimum required fields are passed', () => {
-        const config = configParser('some/file/path');
+        const config = ConfigParser.parse('some/file/path', ManagementMode.CHECK);
 
         expect(config).deep.equal({
             defaultFormat: DEFAULT_FORMAT,
@@ -78,7 +77,7 @@ describe ('#ConfigParser', () => {
     it ('should handle when ignore is an array', () => {
         mockConfig.ignore = ['**/*.js', '**/*.html'];
 
-        const config = configParser('some/file/path');
+        const config = ConfigParser.parse('some/file/path', ManagementMode.CHECK);
 
         expect(config).deep.equal({
             defaultFormat: DEFAULT_FORMAT,
@@ -92,15 +91,16 @@ describe ('#ConfigParser', () => {
         expect(fsReadFileStub).to.have.been.calledOnceWithExactly(path.resolve(process.cwd(), 'LICENSE.txt'));
     });
 
-    it ('should handle when ignore is a file', () => {
-        mockConfig.ignore = 'some/ignore/file';
+    it ('should handle when ignoreFile is passed', () => {
+        mockConfig.ignoreFile = 'some/ignore/file';
 
-        const config = configParser('some/file/path');
+        const config = ConfigParser.parse('some/file/path', ManagementMode.CHECK);
 
         expect(config).deep.equal({
             defaultFormat: DEFAULT_FORMAT,
-            ignore: 'some/ignore/file',
+            ignore: [],
             ignoreDefaultIgnores: false,
+            ignoreFile: 'some/ignore/file',
             license: 'some license',
             licenseFormats: {},
             trailingWhitespace: TrailingWhitespaceMode.DEFAULT,
@@ -116,7 +116,7 @@ describe ('#ConfigParser', () => {
             prepend: '###',
         };
 
-        const config = configParser('some/file/path');
+        const config = ConfigParser.parse('some/file/path', ManagementMode.CHECK);
 
         expect(config).deep.equal({
             defaultFormat: mockConfig.defaultFormat,
@@ -133,7 +133,7 @@ describe ('#ConfigParser', () => {
     it ('should handle when trailing whitespace set but not to trim', () => {
         (mockConfig as any).trailingWhitespace = 'NOT trim';
 
-        const config = configParser('some/file/path');
+        const config = ConfigParser.parse('some/file/path', ManagementMode.CHECK);
 
         expect(config).deep.equal({
             defaultFormat: DEFAULT_FORMAT,
@@ -150,7 +150,7 @@ describe ('#ConfigParser', () => {
     it ('should handle when trailing whitespace set to trim', () => {
         (mockConfig as any).trailingWhitespace = 'trIm';
 
-        const config = configParser('some/file/path');
+        const config = ConfigParser.parse('some/file/path', ManagementMode.CHECK);
 
         expect(config).deep.equal({
             defaultFormat: DEFAULT_FORMAT,
@@ -167,7 +167,7 @@ describe ('#ConfigParser', () => {
     it ('should handle when output specified', () => {
         mockConfig.output = 'some/output/path';
 
-        const config = configParser('some/file/path');
+        const config = ConfigParser.parse('some/file/path', ManagementMode.CHECK);
 
         expect(config).deep.equal({
             defaultFormat: DEFAULT_FORMAT,
@@ -180,5 +180,54 @@ describe ('#ConfigParser', () => {
         } as IConfig);
         expect(fsReadJSONStub).to.have.been.calledOnceWithExactly('some/file/path');
         expect(fsReadFileStub).to.have.been.calledOnceWithExactly(path.resolve(process.cwd(), 'LICENSE.txt'));
+    });
+
+    it ('should set regex identifier when no replacement value passed', () => {
+        mockConfig.regexIdentifier = '#';
+
+        const config = ConfigParser.parse('some/file/path', ManagementMode.CHECK);
+
+        expect(config).deep.equal({
+            defaultFormat: DEFAULT_FORMAT,
+            ignore: [],
+            ignoreDefaultIgnores: false,
+            license: 'some license',
+            licenseFormats: {},
+            regex: {
+                identifier: '#',
+            },
+            trailingWhitespace: TrailingWhitespaceMode.DEFAULT,
+        } as IConfig);
+        expect(fsReadJSONStub).to.have.been.calledOnceWithExactly('some/file/path');
+        expect(fsReadFileStub).to.have.been.calledOnceWithExactly(path.resolve(process.cwd(), 'LICENSE.txt'));
+    });
+
+    it ('should set regex replacement value when identifier used', () => {
+        mockConfig.regexIdentifier = '#';
+
+        const config = ConfigParser.parse('some/file/path', ManagementMode.INSERT, ['replacement']);
+
+        expect(config).deep.equal({
+            defaultFormat: DEFAULT_FORMAT,
+            ignore: [],
+            ignoreDefaultIgnores: false,
+            license: 'some license',
+            licenseFormats: {},
+            regex: {
+                identifier: '#',
+                replacements: ['replacement'],
+            },
+            trailingWhitespace: TrailingWhitespaceMode.DEFAULT,
+        } as IConfig);
+        expect(fsReadJSONStub).to.have.been.calledOnceWithExactly('some/file/path');
+        expect(fsReadFileStub).to.have.been.calledOnceWithExactly(path.resolve(process.cwd(), 'LICENSE.txt'));
+    });
+
+    it ('should throw an error when regex identifier passed in INSERT mode without regex replacement', () => {
+        mockConfig.regexIdentifier = '#';
+
+        expect(() => {
+            ConfigParser.parse('some/file/path', ManagementMode.INSERT);
+        }).to.throw('Must supply regexReplacements option when using regexIdentifier in config when in INSERT mode');
     });
 });

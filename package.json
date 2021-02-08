@@ -1,6 +1,6 @@
 {
   "name": "license-check-and-add",
-  "version": "3.0.5",
+  "version": "4.0.0",
   "description": "A tool to enable the checking, inserting and removal of licenses",
   "bin": {
     "license-check-and-add": "dist/src/cli.js"
@@ -10,7 +10,7 @@
     "build:watch": "npm run build -- -w",
     "preintegration": "npm run build",
     "prepare": "npm run build",
-    "integration": "mocha -r ts-node/register 'test/*.spec.ts'",
+    "integration": "mocha -r ts-node/register 'test/**/*.spec.ts'",
     "lint": "tslint -c tslint.json 'src/**/*.ts'",
     "test": "npm run lint && npm run unit && npm run integration",
     "unit": "nyc mocha -r ts-node/register 'src/**/*.spec.ts'"
@@ -25,7 +25,11 @@
     "header",
     "add",
     "insert",
-    "remove"
+    "remove",
+    "regex",
+    "pattern",
+    "match",
+    "copyright"
   ],
   "author": "awjh",
   "license": "Apache-2.0",
@@ -66,18 +70,18 @@
   },
   "devDependencies": {
     "@types/fs-extra": "^8.0.0",
-    "@types/mocha": "^5.2.7",
+    "@types/mocha": "^7.0.2",
     "@types/mockery": "^1.4.29",
     "@types/node": "^12.6.8",
-    "@types/sinon": "^7.0.13",
-    "@types/sinon-chai": "^3.2.2",
+    "@types/sinon": "^9.0.4",
+    "@types/sinon-chai": "^3.2.4",
     "@types/yargs": "^13.0.0",
     "chai": "^4.2.0",
     "mocha": "^8.2.1",
     "mockery": "^2.1.0",
     "nyc": "^14.1.1",
-    "sinon": "^7.3.2",
-    "sinon-chai": "^3.3.0",
+    "sinon": "^9.0.2",
+    "sinon-chai": "^3.5.0",
     "ts-node": "^8.3.0",
     "tslint": "^5.18.0",
     "typescript": "^3.5.3"

@@ -1,8 +1,8 @@
 import * as path from 'path';
 import { CommandModule } from 'yargs';
-import { Arguments, CONFIG_OPTION } from '../constants';
-import { configParser } from '../lib/config-parser';
-import { getPaths } from '../lib/file-finder';
+import { Arguments, CONFIG_OPTION, REGEX_OPTION } from '../constants';
+import { ConfigParser } from '../lib/config-parser';
+import { FileFinder } from '../lib/file-finder';
 import { LicenseManager, ManagementMode } from '../lib/license-manager';
 
 export function addExports (exports, command: CommandModule) {
@@ -15,12 +15,12 @@ export function addExports (exports, command: CommandModule) {
 }
 
 export function manageLicense (args: Arguments, mode: ManagementMode) {
-    const config = configParser(path.resolve(process.cwd(), args[CONFIG_OPTION]));
-    const paths = getPaths(config.ignore, config.ignoreDefaultIgnores);
+    const config = ConfigParser.parse(path.resolve(process.cwd(), args[CONFIG_OPTION]), mode, args[REGEX_OPTION]);
+    const paths = FileFinder.getPaths(config.ignore, config.ignoreDefaultIgnores, config.ignoreFile);
 
     const licenseManager = new LicenseManager(
         paths, config.license, config.licenseFormats, config.defaultFormat,
-        config.trailingWhitespace, mode, config.output,
+        config.trailingWhitespace, mode, config.output, config.regex,
     );
 
     licenseManager.manage();

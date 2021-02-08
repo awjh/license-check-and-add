@@ -37,7 +37,7 @@ export class LicenseFormatter {
 
     public formatLicenseForFile (extension: string, licenseText: string): string {
         let format = this.defaultFormat;
-        licenseText = licenseText.trim();
+        licenseText = licenseText.replace(/^(\r\n|\n)+|(\r\n|\n)+$/g, '');
 
         if (this.licenseFormats.hasOwnProperty(extension)) {
             format = this.licenseFormats[extension];
@@ -83,7 +83,13 @@ export class LicenseFormatter {
             const splitKey = key.split('|');
 
             splitKey.forEach((fileType) => {
-                separated['.' + fileType] = formats[key];
+                if (!fileType.startsWith('^')) {
+                    fileType = '.' + fileType;
+                } else {
+                    fileType = fileType.substring(1);
+                }
+
+                separated[fileType] = formats[key];
             });
         });
 
