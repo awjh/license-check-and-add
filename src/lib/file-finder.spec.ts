@@ -70,11 +70,22 @@ describe ('#FileFinder', () => {
     });
 
     it ('should return the list of file from globby filtered by ignore file passed and default ignores', () => {
-        const paths = FileFinder.getPaths('some/file/path', false);
+        const paths = FileFinder.getPaths([], false, 'some/file/path');
 
         expect(paths).to.deep.equal(mockValidPaths);
         expect(globbySyncStub).to.have.been.calledOnceWithExactly(
             ['**/*', 'some', 'ignore', 'values', '!some/file/path'], Object.assign(globbyConfig, {ignore: DEFAULT_IGNORES}),
+        );
+        expect(gitignoreToGlobStub).to.have.been.calledOnceWithExactly(path.resolve(process.cwd(), 'some/file/path'));
+    });
+
+    it ('should combine ignore array and ignore file', () => {
+        const paths = FileFinder.getPaths(ignoreInput, false, 'some/file/path');
+
+        expect(paths).to.deep.equal(mockValidPaths);
+        expect(globbySyncStub).to.have.been.calledOnceWithExactly(
+            ['**/*', 'some', 'ignore', 'values', '!some/file/path'],
+            Object.assign(globbyConfig, {ignore: ignoreInput.concat(DEFAULT_IGNORES)}),
         );
         expect(gitignoreToGlobStub).to.have.been.calledOnceWithExactly(path.resolve(process.cwd(), 'some/file/path'));
     });

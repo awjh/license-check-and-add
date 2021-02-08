@@ -1,5 +1,5 @@
 {
-    "ignore": ".ignorefile",
+    "ignoreFile": ".ignorefile",
     "license": "LICENSE",
     "licenseFormats": {
         "js": {

@@ -16,7 +16,7 @@ export function addExports (exports, command: CommandModule) {
 
 export function manageLicense (args: Arguments, mode: ManagementMode) {
     const config = ConfigParser.parse(path.resolve(process.cwd(), args[CONFIG_OPTION]), mode, args[REGEX_OPTION]);
-    const paths = FileFinder.getPaths(config.ignore, config.ignoreDefaultIgnores);
+    const paths = FileFinder.getPaths(config.ignore, config.ignoreDefaultIgnores, config.ignoreFile);
 
     const licenseManager = new LicenseManager(
         paths, config.license, config.licenseFormats, config.defaultFormat,

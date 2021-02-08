@@ -15,17 +15,14 @@
         },
         "ignore": {
             "$id": "#/properties/ignore",
-            "anyOf": [
-                {
-                    "type": "string"
-                },
-                {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            ]
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "ignoreFile": {
+            "$id": "#/properties/ignoreFile",
+            "type": "string"
         },
         "trailingWhitespace": {
             "$id": "#/properties/trailingWhitespace",

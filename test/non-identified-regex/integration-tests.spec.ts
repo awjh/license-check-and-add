@@ -18,6 +18,7 @@ describe ('#Non Identified Regex', () => {
 
     before (() => {
         fs.copySync(path.resolve(__dirname, 'original-files'), tmp);
+        fs.copyFileSync(path.resolve(__dirname, '.ignorefile'), path.resolve(tmp, '.ignorefile'));
         process.chdir(tmp);
     });
 
