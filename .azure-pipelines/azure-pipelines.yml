@@ -31,12 +31,21 @@ steps:
         GHUSER: $(GHUSER)
         GHEMAIL: $(GHEMAIL)
     displayName: Check package.json version matches release and bump
-  - script: ./.azure-pipelines/scripts/publish-to-npm.sh
+  - script: npm pack
     condition: and(contains(variables['build.sourceBranch'], 'refs/tags'), succeeded())
-    env:
-        TAG: $(Build.SourceBranchName)
-        NPMTOKEN: $(NPMTOKEN)
-    displayName: Publish to NPM
+    displayName: npm pack
+  - task: CopyFiles@2
+    inputs:
+        contents: '*.tgz'
+        targetFolder: $(Build.ArtifactStagingDirectory)
+    condition: and(contains(variables['build.sourceBranch'], 'refs/tags'), succeeded())
+    displayName: 'Copy archives to artifacts staging directory'
+  - task: PublishBuildArtifacts@1
+    inputs:
+        path: $(Build.ArtifactStagingDirectory)
+        artifact: package
+    condition: and(contains(variables['build.sourceBranch'], 'refs/tags'), succeeded())
+    displayName: 'Publish artifacts'
   - script: ./.azure-pipelines/scripts/version-bump-post-release.sh
     condition: and(contains(variables['build.sourceBranch'], 'refs/tags'), succeeded())
     env:
