@@ -20,10 +20,16 @@ steps:
         NPMTOKEN: $(NPMTOKEN)
     displayName: Install node modules
   - script: npm run lint
+    env:
+        NPMTOKEN: $(NPMTOKEN)
     displayName: Lint files
   - script: npm run unit
+    env:
+        NPMTOKEN: $(NPMTOKEN)
     displayName: Run unit tests
   - script: npm run integration
+    env:
+        NPMTOKEN: $(NPMTOKEN)
     displayName: Run integration tests
   - script: ./.azure-pipelines/scripts/version-bump-to-release.sh
     condition: and(contains(variables['build.sourceBranch'], 'refs/tags'), succeeded())
