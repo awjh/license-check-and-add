@@ -1,7 +1,7 @@
 Lorem ipsum dolor sit amet, ##[a-z]{4}[0-9]{3}## adipiscing elit.
 In venenatis dignissim dignissim. Aliquam faucibus mi erat.
 Aliquam non ipsum vitae justo sodales cursus eu in turpis.
-Integer mollis venenatis urna a rutrum. Etiam placerat 
+Integer mollis venenatis urna a rutrum. ##[0-9]{4}## placerat 
 suscipit arcu, eget porta sem tristique viverra. Donec ut
 efficitur diam. Sed eget urna at velit sodales ullamcorper.
 Sed risus ligula, suscipit a mauris mollis, egestas mattis
