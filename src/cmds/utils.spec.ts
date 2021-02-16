@@ -80,16 +80,40 @@ describe ('#CommandUtils', () => {
     });
 
     describe ('manageLicense', () => {
-        it ('should setup license manager and manage', () => {
+        it ('should setup license manager and manage handling when regex contains numbers', () => {
             const mockArgs = {};
             mockArgs[CONFIG_OPTION] = 'some config file';
-            mockArgs[REGEX_OPTION] = 'some regex option';
+            mockArgs[REGEX_OPTION] = ['some regex option', 2];
 
             const expectedConfigPath = path.resolve(process.cwd(), 'some config file');
 
             MockUtils.manageLicense(mockArgs, ManagementMode.CHECK);
 
-            expect(configParserStub).to.have.been.calledOnceWithExactly(expectedConfigPath, ManagementMode.CHECK, 'some regex option');
+            expect(configParserStub).to.have.been.calledOnceWithExactly(
+                expectedConfigPath, ManagementMode.CHECK, ['some regex option', '2'],
+            );
+            expect(getPathsStub).to.have.been.calledOnceWithExactly(
+                mockConfig.ignore, mockConfig.ignoreDefaultIgnores, mockConfig.ignoreFile,
+            );
+            expect(LicenseManagerStub).to.have.been.calledOnceWithExactly(
+                ['some paths'], mockConfig.license, mockConfig.licenseFormats, mockConfig.defaultFormat,
+                mockConfig.trailingWhitespace, ManagementMode.CHECK, mockConfig.output, mockConfig.regex,
+            );
+            expect(mockLicenseManager.manage).to.have.been.calledOnceWithExactly();
+        });
+
+        it ('should setup license manager and manage handling when no regex passed', () => {
+            const mockArgs = {};
+            mockArgs[CONFIG_OPTION] = 'some config file';
+            mockArgs[REGEX_OPTION] = undefined;
+
+            const expectedConfigPath = path.resolve(process.cwd(), 'some config file');
+
+            MockUtils.manageLicense(mockArgs, ManagementMode.CHECK);
+
+            expect(configParserStub).to.have.been.calledOnceWithExactly(
+                expectedConfigPath, ManagementMode.CHECK, undefined,
+            );
             expect(getPathsStub).to.have.been.calledOnceWithExactly(
                 mockConfig.ignore, mockConfig.ignoreDefaultIgnores, mockConfig.ignoreFile,
             );

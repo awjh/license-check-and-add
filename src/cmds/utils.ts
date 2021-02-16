@@ -15,7 +15,9 @@ export function addExports (exports, command: CommandModule) {
 }
 
 export function manageLicense (args: Arguments, mode: ManagementMode) {
-    const config = ConfigParser.parse(path.resolve(process.cwd(), args[CONFIG_OPTION]), mode, args[REGEX_OPTION]);
+    const replacements = stringifyRegexReplacement(args[REGEX_OPTION]);
+
+    const config = ConfigParser.parse(path.resolve(process.cwd(), args[CONFIG_OPTION]), mode, replacements);
     const paths = FileFinder.getPaths(config.ignore, config.ignoreDefaultIgnores, config.ignoreFile);
 
     const licenseManager = new LicenseManager(
@@ -24,4 +26,8 @@ export function manageLicense (args: Arguments, mode: ManagementMode) {
     );
 
     licenseManager.manage();
+}
+
+function stringifyRegexReplacement (regexReplacements: any): string[] {
+    return Array.isArray(regexReplacements) ? regexReplacements.map((replacement) => '' + replacement) : regexReplacements;
 }
