@@ -141,7 +141,7 @@ export class LicenseManager {
             }).join(EOL);
         }
 
-        if (fileContents.startsWith('#!')) {
+        if (fileContents.startsWith('#!') || fileContents.startsWith('<?xml')) {
             const lines = fileContents.split(/\r?\n/);
 
             newText = lines[0] + EOL + formattedLicense;
